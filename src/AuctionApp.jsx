@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Gavel, DollarSign, Download, Upload, Trophy, Play, Square, SkipForward, RefreshCw, Settings, LogOut, User } from 'lucide-react';
+import { Gavel, Download, Upload, Settings, LogOut, User } from 'lucide-react';
 
 // Color palette
 const colors = {
@@ -203,15 +203,6 @@ const AuctionApp = () => {
     showNotification(`Started: ${sortedItems[index].title}`);
   };
   
-  const startNextItem = () => {
-    const nextIndex = currentItemIndex + 1;
-    if (nextIndex < sortedItems.length) {
-      startItem(nextIndex);
-    } else {
-      showNotification('No more items');
-    }
-  };
-  
   const placeBid = (amount) => {
     if (!currentUser || isAuctioneer) {
       showNotification('Only bidders can place bids');
@@ -297,37 +288,6 @@ const AuctionApp = () => {
       }
     };
     reader.readAsText(file);
-  };
-  
-  const resetBalances = () => {
-    if (window.confirm('Reset all balances to $500?')) {
-      setBidders(bidders.map(b => ({ ...b, balance: 500 })));
-      showNotification('Balances reset');
-    }
-  };
-  
-  const resetAllData = () => {
-    if (window.confirm('Reset ALL data? Cannot be undone!')) {
-      setBidders(INITIAL_BIDDERS);
-      setItems([]);
-      setCurrentItemIndex(-1);
-      setCurrentBids([]);
-      setItemActive(false);
-      setAuctioneerPassword('');
-      setSetupComplete(false);
-      setCurrentUser(null);
-      setIsAuctioneer(false);
-      showNotification('All data reset');
-    }
-  };
-  
-  const restartAuction = () => {
-    if (window.confirm('Restart auction from beginning?')) {
-      setCurrentItemIndex(-1);
-      setCurrentBids([]);
-      setItemActive(false);
-      showNotification('Auction restarted');
-    }
   };
   
   const currentBidder = currentUser && !isAuctioneer 
