@@ -302,6 +302,50 @@ const AuctionApp = () => {
     ? currentHighBid.bidder === currentBidder.name 
     : false;
 
+  // Reset functions
+  const resetBalances = () => {
+    if (window.confirm('Reset all balances to $500? (Items won will be kept)')) {
+      setBidders(bidders.map(b => ({ ...b, balance: 500 })));
+      showNotification('Balances reset to $500');
+    }
+  };
+  
+  const resetItemsWon = () => {
+    if (window.confirm('Clear all items won from bidders? (Balances will remain unchanged)')) {
+      setBidders(bidders.map(b => ({ ...b, itemsWon: [] })));
+      showNotification('Items won cleared');
+    }
+  };
+  
+  const restartAuction = () => {
+    if (window.confirm('Restart auction from first unwon item? (Current item will stop, already won items stay won)')) {
+      setItemActive(false);
+      setCurrentBids([]);
+      // Find first unwon item
+      const firstUnwonIndex = sortedItems.findIndex(item => !item.winner);
+      if (firstUnwonIndex >= 0) {
+        setCurrentItemIndex(firstUnwonIndex);
+        showNotification('Auction restarted - ready to start next unwon item');
+      } else {
+        setCurrentItemIndex(-1);
+        showNotification('All items have been won!');
+      }
+    }
+  };
+  
+  const resetAllData = () => {
+    if (window.confirm('⚠️ RESET EVERYTHING? This will delete all items, bids, and winners. Cannot be undone!')) {
+      if (window.confirm('Are you ABSOLUTELY SURE? This action is permanent!')) {
+        setBidders(INITIAL_BIDDERS);
+        setItems([]);
+        setCurrentItemIndex(-1);
+        setCurrentBids([]);
+        setItemActive(false);
+        showNotification('All data has been reset');
+      }
+    }
+  };
+
   // Styles
   const inputStyle = {
     backgroundColor: colors.sage,
@@ -1321,6 +1365,9 @@ const AuctionApp = () => {
             </div>
             
             <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${colors.border}` }}>
+              <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: colors.navy, marginBottom: '12px' }}>
+                Data Management
+              </h4>
               <button
                 onClick={exportData}
                 style={{
@@ -1336,7 +1383,7 @@ const AuctionApp = () => {
                 <Download size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
                 Export Data
               </button>
-              <label style={{ display: 'block' }}>
+              <label style={{ display: 'block', marginBottom: '20px' }}>
                 <input type="file" accept=".json" onChange={importData} style={{ display: 'none' }} />
                 <div style={{
                   ...buttonStyle,
@@ -1351,6 +1398,57 @@ const AuctionApp = () => {
                   Import Data
                 </div>
               </label>
+              
+              <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: colors.navy, marginBottom: '12px', marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${colors.border}` }}>
+                Reset Options
+              </h4>
+              <button
+                onClick={restartAuction}
+                style={{
+                  ...buttonStyle,
+                  width: '100%',
+                  backgroundColor: '#f59e0b',
+                  boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
+                  marginBottom: '8px'
+                }}
+              >
+                ↻ Restart from Next Unwon Item
+              </button>
+              <button
+                onClick={resetBalances}
+                style={{
+                  ...buttonStyle,
+                  width: '100%',
+                  backgroundColor: '#f59e0b',
+                  boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
+                  marginBottom: '8px'
+                }}
+              >
+                💰 Reset All Balances to $500
+              </button>
+              <button
+                onClick={resetItemsWon}
+                style={{
+                  ...buttonStyle,
+                  width: '100%',
+                  backgroundColor: '#f59e0b',
+                  boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
+                  marginBottom: '8px'
+                }}
+              >
+                🏆 Clear All Items Won
+              </button>
+              <button
+                onClick={resetAllData}
+                style={{
+                  ...buttonStyle,
+                  width: '100%',
+                  backgroundColor: '#ef4444',
+                  boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)'
+                }}
+              >
+                ⚠️ Reset Everything
+              </button>
             </div>
           </div>
         </div>
