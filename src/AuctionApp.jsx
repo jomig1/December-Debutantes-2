@@ -367,7 +367,7 @@ const AuctionApp = () => {
               type="password"
               value={auctioneerPassword}
               onChange={(e) => setAuctioneerPassword(e.target.value)}
-              className="w-full p-3 bg-slate-700 text-white rounded border border-slate-600 focus:border-emerald-500 focus:outline-none"
+              className="w-full p-3 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               placeholder="Set auctioneer password"
             />
           </div>
@@ -386,7 +386,7 @@ const AuctionApp = () => {
                       newBidders[idx].password = e.target.value;
                       setBidders(newBidders);
                     }}
-                    className="w-full p-2 bg-slate-700 text-white rounded border border-slate-600 focus:border-emerald-500 focus:outline-none"
+                    className="w-full p-2 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                     placeholder="Password"
                   />
                 </div>
@@ -528,7 +528,7 @@ const AuctionApp = () => {
             type="number"
             value={formData.number}
             onChange={(e) => setFormData({ ...formData, number: e.target.value })}
-            className="w-full p-2 bg-slate-700 text-white rounded border border-slate-600 focus:border-emerald-500 focus:outline-none"
+            className="w-full p-2 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             required
           />
         </div>
@@ -538,7 +538,7 @@ const AuctionApp = () => {
             type="text"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="w-full p-2 bg-slate-700 text-white rounded border border-slate-600 focus:border-emerald-500 focus:outline-none"
+            className="w-full p-2 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             required
           />
         </div>
@@ -547,7 +547,7 @@ const AuctionApp = () => {
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full p-2 bg-slate-700 text-white rounded border border-slate-600 focus:border-emerald-500 focus:outline-none"
+            className="w-full p-2 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             rows="3"
           />
         </div>
@@ -557,7 +557,7 @@ const AuctionApp = () => {
             type="url"
             value={formData.imageUrl}
             onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-            className="w-full p-2 bg-slate-700 text-white rounded border border-slate-600 focus:border-emerald-500 focus:outline-none"
+            className="w-full p-2 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             placeholder="https://i.imgur.com/xxxxx.jpg"
           />
         </div>
@@ -605,7 +605,7 @@ const AuctionApp = () => {
               <select
                 value={loginName}
                 onChange={(e) => setLoginName(e.target.value)}
-                className="w-full p-3 bg-slate-700 text-white rounded border border-slate-600 focus:border-emerald-500 focus:outline-none"
+                className="w-full p-3 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 required
               >
                 <option value="">Select your name</option>
@@ -622,7 +622,7 @@ const AuctionApp = () => {
                 type="password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                className="w-full p-3 bg-slate-700 text-white rounded border border-slate-600 focus:border-emerald-500 focus:outline-none"
+                className="w-full p-3 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 required
               />
             </div>
@@ -1004,7 +1004,7 @@ const AuctionApp = () => {
                   value={customBidAmount}
                   onChange={(e) => setCustomBidAmount(e.target.value)}
                   placeholder="Custom amount"
-                  className="flex-1 p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-emerald-500 focus:outline-none"
+                  className="flex-1 p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
                 <button
                   onClick={() => customBidAmount && placeBid(parseInt(customBidAmount))}
