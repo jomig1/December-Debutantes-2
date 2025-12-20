@@ -49,6 +49,42 @@ const AuctionApp = () => {
   const sortedItems = [...items].sort((a, b) => a.number - b.number);
   const currentItem = currentItemIndex >= 0 ? sortedItems[currentItemIndex] : null;
   
+  // End current item function (defined before useEffect that uses it)
+  const endCurrentItem = useCallback(() => {
+    if (!currentItem || !itemActive) return;
+    
+    setItemActive(false);
+    
+    // Determine winner
+    if (currentBids.length > 0) {
+      const highestBid = currentBids[currentBids.length - 1];
+      const winner = highestBid.bidder;
+      const amount = highestBid.amount;
+      
+      // Update item with winner
+      setItems(items.map(item => 
+        item.id === currentItem.id 
+          ? { ...item, winner, winningBid: amount }
+          : item
+      ));
+      
+      // Update bidder's balance and items won
+      setBidders(bidders.map(b => 
+        b.name === winner 
+          ? { 
+              ...b, 
+              balance: b.balance - amount,
+              itemsWon: [...b.itemsWon, { ...currentItem, winningBid: amount }]
+            }
+          : b
+      ));
+      
+      showNotification(`${currentItem.title} sold to ${winner} for $${amount}!`);
+    } else {
+      showNotification(`${currentItem.title} ended with no bids`);
+    }
+  }, [currentItem, itemActive, currentBids, items, bidders]);
+  
   // Timer logic
   useEffect(() => {
     if (itemActive && currentItem) {
@@ -163,41 +199,6 @@ const AuctionApp = () => {
     lastBidTimeRef.current = null;
     showNotification(`Started: ${sortedItems[index].title}`);
   };
-  
-  const endCurrentItem = useCallback(() => {
-    if (!currentItem || !itemActive) return;
-    
-    setItemActive(false);
-    
-    // Determine winner
-    if (currentBids.length > 0) {
-      const highestBid = currentBids[currentBids.length - 1];
-      const winner = highestBid.bidder;
-      const amount = highestBid.amount;
-      
-      // Update item with winner
-      setItems(items.map(item => 
-        item.id === currentItem.id 
-          ? { ...item, winner, winningBid: amount }
-          : item
-      ));
-      
-      // Update bidder's balance and items won
-      setBidders(bidders.map(b => 
-        b.name === winner 
-          ? { 
-              ...b, 
-              balance: b.balance - amount,
-              itemsWon: [...b.itemsWon, { ...currentItem, winningBid: amount }]
-            }
-          : b
-      ));
-      
-      showNotification(`${currentItem.title} sold to ${winner} for $${amount}!`);
-    } else {
-      showNotification(`${currentItem.title} ended with no bids`);
-    }
-  }, [currentItem, itemActive, currentBids, items, bidders]);
   
   const startNextItem = () => {
     const nextIndex = currentItemIndex + 1;
