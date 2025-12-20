@@ -344,40 +344,41 @@ const AuctionApp = () => {
 
   // Render functions
   const renderSetupView = () => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 p-6">
+    <div className="min-h-screen p-6" style={{ backgroundColor: '#e8f5e9' }}>
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <svg width="80" height="80" viewBox="0 0 100 100" className="mr-4">
-              <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill="#10b981" textAnchor="middle">DD</text>
+              <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill="#1e3a8a" textAnchor="middle">DD</text>
             </svg>
           </div>
-          <h1 className="text-5xl font-bold text-emerald-400 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+          <h1 className="text-5xl font-bold mb-2" style={{ fontFamily: 'Georgia, serif', color: '#1e3a8a' }}>
             December Debutantes
           </h1>
-          <p className="text-slate-300 text-xl">Christmas Auction Setup</p>
+          <p className="text-xl" style={{ color: '#1e3a8a' }}>Christmas Auction Setup</p>
         </div>
         
-        <div className="bg-slate-800 rounded-lg p-8 shadow-2xl border border-emerald-600/30">
-          <h2 className="text-2xl font-bold text-emerald-400 mb-6">Auction Configuration</h2>
+        <div className="bg-white rounded-lg p-8 shadow-2xl border-2" style={{ borderColor: '#10b981' }}>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: '#1e3a8a' }}>Auction Configuration</h2>
           
           <div className="mb-8">
-            <label className="block text-slate-300 mb-2 font-semibold">Auctioneer Password</label>
+            <label className="block style={{ color: '#1e3a8a' }} mb-2 font-semibold">Auctioneer Password</label>
             <input
               type="password"
               value={auctioneerPassword}
               onChange={(e) => setAuctioneerPassword(e.target.value)}
-              className="w-full p-3 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="w-full p-3 rounded border-2 focus:outline-none" style={{ backgroundColor: '#e8f5e9', color: '#000000', borderColor: '#10b981' }}
+              style={{ backgroundColor: '#e8f5e9', color: '#000000', borderColor: '#10b981' }}
               placeholder="Set auctioneer password"
             />
           </div>
           
           <div className="mb-8">
-            <h3 className="text-xl font-bold text-emerald-400 mb-4">Bidder Passwords</h3>
+            <h3 className="text-xl font-bold style={{ color: '#1e3a8a' }} mb-4">Bidder Passwords</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {bidders.map((bidder, idx) => (
                 <div key={bidder.name}>
-                  <label className="block text-slate-300 mb-1">{bidder.name}</label>
+                  <label className="block style={{ color: '#1e3a8a' }} mb-1">{bidder.name}</label>
                   <input
                     type="password"
                     value={bidder.password}
@@ -386,7 +387,7 @@ const AuctionApp = () => {
                       newBidders[idx].password = e.target.value;
                       setBidders(newBidders);
                     }}
-                    className="w-full p-2 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full p-2 rounded border-2 focus:outline-none" style={{ backgroundColor: '#e8f5e9', color: '#000000', borderColor: '#10b981' }}
                     placeholder="Password"
                   />
                 </div>
@@ -437,7 +438,7 @@ const AuctionApp = () => {
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
       <div className="bg-slate-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-emerald-400">Manage Auction Items</h2>
+          <h2 className="text-2xl font-bold style={{ color: '#1e3a8a' }}">Manage Auction Items</h2>
           <button
             onClick={() => setShowSetupModal(false)}
             className="text-slate-400 hover:text-white"
@@ -449,7 +450,7 @@ const AuctionApp = () => {
         <ItemForm onSubmit={addItem} />
         
         <div className="mt-8">
-          <h3 className="text-xl font-bold text-emerald-400 mb-4">Items ({items.length})</h3>
+          <h3 className="text-xl font-bold style={{ color: '#1e3a8a' }} mb-4">Items ({items.length})</h3>
           <div className="space-y-3">
             {sortedItems.map((item) => (
               <div key={item.id} className="bg-slate-700 p-4 rounded-lg flex items-center gap-4">
@@ -458,9 +459,9 @@ const AuctionApp = () => {
                 )}
                 <div className="flex-1">
                   <div className="font-bold text-white">#{item.number} - {item.title}</div>
-                  <div className="text-slate-300 text-sm">{item.description}</div>
+                  <div className="style={{ color: '#1e3a8a' }} text-sm">{item.description}</div>
                   {item.winner && (
-                    <div className="text-emerald-400 text-sm mt-1">
+                    <div className="style={{ color: '#1e3a8a' }} text-sm mt-1">
                       Winner: {item.winner} - ${item.winningBid}
                     </div>
                   )}
@@ -488,7 +489,7 @@ const AuctionApp = () => {
       {editingItem && (
         <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
           <div className="bg-slate-800 rounded-lg p-6 max-w-2xl w-full">
-            <h3 className="text-xl font-bold text-emerald-400 mb-4">Edit Item</h3>
+            <h3 className="text-xl font-bold style={{ color: '#1e3a8a' }} mb-4">Edit Item</h3>
             <ItemForm 
               initialData={editingItem}
               onSubmit={(data) => updateItem(editingItem.id, data)}
@@ -523,41 +524,41 @@ const AuctionApp = () => {
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-slate-300 mb-1">Item Number</label>
+          <label className="block style={{ color: '#1e3a8a' }} mb-1">Item Number</label>
           <input
             type="number"
             value={formData.number}
             onChange={(e) => setFormData({ ...formData, number: e.target.value })}
-            className="w-full p-2 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+            className="w-full p-2 rounded border-2 focus:outline-none" style={{ backgroundColor: '#e8f5e9', color: '#000000', borderColor: '#10b981' }}
             required
           />
         </div>
         <div>
-          <label className="block text-slate-300 mb-1">Title</label>
+          <label className="block style={{ color: '#1e3a8a' }} mb-1">Title</label>
           <input
             type="text"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="w-full p-2 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+            className="w-full p-2 rounded border-2 focus:outline-none" style={{ backgroundColor: '#e8f5e9', color: '#000000', borderColor: '#10b981' }}
             required
           />
         </div>
         <div>
-          <label className="block text-slate-300 mb-1">Description</label>
+          <label className="block style={{ color: '#1e3a8a' }} mb-1">Description</label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full p-2 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+            className="w-full p-2 rounded border-2 focus:outline-none" style={{ backgroundColor: '#e8f5e9', color: '#000000', borderColor: '#10b981' }}
             rows="3"
           />
         </div>
         <div>
-          <label className="block text-slate-300 mb-1">Image URL (Imgur)</label>
+          <label className="block style={{ color: '#1e3a8a' }} mb-1">Image URL (Imgur)</label>
           <input
             type="url"
             value={formData.imageUrl}
             onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-            className="w-full p-2 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+            className="w-full p-2 rounded border-2 focus:outline-none" style={{ backgroundColor: '#e8f5e9', color: '#000000', borderColor: '#10b981' }}
             placeholder="https://i.imgur.com/xxxxx.jpg"
           />
         </div>
@@ -584,16 +585,16 @@ const AuctionApp = () => {
   
   const renderLoginView = () => {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 flex items-center justify-center p-6">
-        <div className="bg-slate-800 rounded-lg p-8 max-w-md w-full shadow-2xl border border-emerald-600/30">
+      <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: '#e8f5e9' }}>
+        <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl border-2" style={{ borderColor: '#10b981' }}>
           <div className="text-center mb-8">
             <svg width="100" height="100" viewBox="0 0 100 100" className="mx-auto mb-4">
-              <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill="#10b981" textAnchor="middle">DD</text>
+              <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill="#1e3a8a" textAnchor="middle">DD</text>
             </svg>
-            <h1 className="text-4xl font-bold text-emerald-400 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+            <h1 className="text-4xl font-bold mb-2" style={{ fontFamily: 'Georgia, serif', color: '#1e3a8a' }}>
               December Debutantes
             </h1>
-            <p className="text-slate-300">Christmas Auction</p>
+            <p style={{ color: '#1e3a8a' }}>Christmas Auction</p>
           </div>
           
           <form onSubmit={(e) => {
@@ -601,11 +602,11 @@ const AuctionApp = () => {
             handleLogin(loginName, loginPassword);
           }}>
             <div className="mb-4">
-              <label className="block text-slate-300 mb-2">Name</label>
+              <label className="block style={{ color: '#1e3a8a' }} mb-2">Name</label>
               <select
                 value={loginName}
                 onChange={(e) => setLoginName(e.target.value)}
-                className="w-full p-3 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full p-3 rounded border-2 focus:outline-none" style={{ backgroundColor: '#e8f5e9', color: '#000000', borderColor: '#10b981' }}
                 required
               >
                 <option value="">Select your name</option>
@@ -617,12 +618,12 @@ const AuctionApp = () => {
             </div>
             
             <div className="mb-6">
-              <label className="block text-slate-300 mb-2">Password</label>
+              <label className="block style={{ color: '#1e3a8a' }} mb-2">Password</label>
               <input
                 type="password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                className="w-full p-3 bg-gray-100 text-gray-900 rounded border border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full p-3 rounded border-2 focus:outline-none" style={{ backgroundColor: '#e8f5e9', color: '#000000', borderColor: '#10b981' }}
                 required
               />
             </div>
@@ -646,10 +647,10 @@ const AuctionApp = () => {
         <div className="bg-slate-800 rounded-lg p-4 mb-4 flex items-center justify-between border border-emerald-600/30">
           <div className="flex items-center gap-4">
             <svg width="50" height="50" viewBox="0 0 100 100">
-              <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill="#10b981" textAnchor="middle">DD</text>
+              <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill="#1e3a8a" textAnchor="middle">DD</text>
             </svg>
             <div>
-              <h1 className="text-2xl font-bold text-emerald-400" style={{ fontFamily: 'Georgia, serif' }}>
+              <h1 className="text-2xl font-bold style={{ color: '#1e3a8a' }}" style={{ fontFamily: 'Georgia, serif' }}>
                 Auctioneer Control Panel
               </h1>
               <p className="text-slate-400">December Debutantes Auction</p>
@@ -689,14 +690,14 @@ const AuctionApp = () => {
                 )}
               </div>
               <div>
-                <div className="text-emerald-400 text-sm mb-2">Item #{currentItem.number}</div>
+                <div className="style={{ color: '#1e3a8a' }} text-sm mb-2">Item #{currentItem.number}</div>
                 <h2 className="text-3xl font-bold text-white mb-4">{currentItem.title}</h2>
-                <p className="text-slate-300 mb-6">{currentItem.description}</p>
+                <p className="style={{ color: '#1e3a8a' }} mb-6">{currentItem.description}</p>
                 
                 <div className="bg-slate-900 rounded-lg p-4 mb-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-slate-400">Time Remaining:</span>
-                    <span className={`text-2xl font-bold ${timeRemaining <= 10 ? 'text-red-400 animate-pulse' : 'text-emerald-400'}`}>
+                    <span className={`text-2xl font-bold ${timeRemaining <= 10 ? 'text-red-400 animate-pulse' : 'style={{ color: '#1e3a8a' }}'}`}>
                       {Math.floor(timeRemaining / 60)}:{String(timeRemaining % 60).padStart(2, '0')}
                     </span>
                   </div>
@@ -709,9 +710,9 @@ const AuctionApp = () => {
                 
                 {currentHighBid ? (
                   <div className="bg-emerald-900/30 rounded-lg p-4 mb-4 border border-emerald-600/50">
-                    <div className="text-slate-300 mb-1">Current High Bid</div>
-                    <div className="text-3xl font-bold text-emerald-400">${currentHighBid.amount}</div>
-                    <div className="text-slate-300">by {currentHighBid.bidder}</div>
+                    <div className="style={{ color: '#1e3a8a' }} mb-1">Current High Bid</div>
+                    <div className="text-3xl font-bold style={{ color: '#1e3a8a' }}">${currentHighBid.amount}</div>
+                    <div style={{ color: '#1e3a8a' }}>by {currentHighBid.bidder}</div>
                   </div>
                 ) : (
                   <div className="bg-slate-700 rounded-lg p-4 mb-4 text-center text-slate-400">
@@ -744,12 +745,12 @@ const AuctionApp = () => {
             {/* Bid History */}
             {currentBids.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-xl font-bold text-emerald-400 mb-3">Bid History</h3>
+                <h3 className="text-xl font-bold style={{ color: '#1e3a8a' }} mb-3">Bid History</h3>
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   {[...currentBids].reverse().map((bid) => (
                     <div key={bid.id} className="bg-slate-700 p-3 rounded flex justify-between items-center">
                       <span className="text-white font-semibold">{bid.bidder}</span>
-                      <span className="text-emerald-400 font-bold">${bid.amount}</span>
+                      <span className="style={{ color: '#1e3a8a' }} font-bold">${bid.amount}</span>
                     </div>
                   ))}
                 </div>
@@ -762,7 +763,7 @@ const AuctionApp = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Items */}
           <div className="lg:col-span-2 bg-slate-800 rounded-lg p-6 border border-emerald-600/30">
-            <h3 className="text-xl font-bold text-emerald-400 mb-4">Auction Items ({sortedItems.length})</h3>
+            <h3 className="text-xl font-bold style={{ color: '#1e3a8a' }} mb-4">Auction Items ({sortedItems.length})</h3>
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {sortedItems.map((item, idx) => (
                 <div 
@@ -781,12 +782,12 @@ const AuctionApp = () => {
                   <div className="flex-1">
                     <div className="font-bold text-white">#{item.number} - {item.title}</div>
                     {item.winner ? (
-                      <div className="text-emerald-400 text-sm">
+                      <div className="style={{ color: '#1e3a8a' }} text-sm">
                         <Trophy className="inline mr-1" size={14} />
                         {item.winner} - ${item.winningBid}
                       </div>
                     ) : idx === currentItemIndex ? (
-                      <div className="text-emerald-400 text-sm">Currently Active</div>
+                      <div className="style={{ color: '#1e3a8a' }} text-sm">Currently Active</div>
                     ) : (
                       <div className="text-slate-400 text-sm">Not started</div>
                     )}
@@ -808,13 +809,13 @@ const AuctionApp = () => {
           {/* Bidders and Controls */}
           <div className="space-y-4">
             <div className="bg-slate-800 rounded-lg p-6 border border-emerald-600/30">
-              <h3 className="text-xl font-bold text-emerald-400 mb-4">Bidders</h3>
+              <h3 className="text-xl font-bold style={{ color: '#1e3a8a' }} mb-4">Bidders</h3>
               <div className="space-y-2">
                 {bidders.map((bidder) => (
                   <div key={bidder.name} className="bg-slate-700 p-3 rounded">
                     <div className="flex justify-between items-center mb-1">
                       <span className="font-semibold text-white">{bidder.name}</span>
-                      <span className="text-emerald-400 font-bold">${bidder.balance}</span>
+                      <span className="style={{ color: '#1e3a8a' }} font-bold">${bidder.balance}</span>
                     </div>
                     {bidder.itemsWon.length > 0 && (
                       <div className="text-slate-400 text-sm">
@@ -827,7 +828,7 @@ const AuctionApp = () => {
             </div>
             
             <div className="bg-slate-800 rounded-lg p-6 border border-emerald-600/30">
-              <h3 className="text-xl font-bold text-emerald-400 mb-4">Management</h3>
+              <h3 className="text-xl font-bold style={{ color: '#1e3a8a' }} mb-4">Management</h3>
               <div className="space-y-2">
                 <button
                   onClick={() => setShowSetupModal(true)}
@@ -888,10 +889,10 @@ const AuctionApp = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <svg width="40" height="40" viewBox="0 0 100 100">
-                <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill="#10b981" textAnchor="middle">DD</text>
+                <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill="#1e3a8a" textAnchor="middle">DD</text>
               </svg>
               <div>
-                <h2 className="text-xl font-bold text-emerald-400">Welcome, {currentBidder.name}!</h2>
+                <h2 className="text-xl font-bold style={{ color: '#1e3a8a' }}">Welcome, {currentBidder.name}!</h2>
                 <p className="text-slate-400 text-sm">December Debutantes Auction</p>
               </div>
             </div>
@@ -910,7 +911,7 @@ const AuctionApp = () => {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-slate-400 mb-1">Your Balance</div>
-              <div className="text-4xl font-bold text-emerald-400">${currentBidder.balance}</div>
+              <div className="text-4xl font-bold style={{ color: '#1e3a8a' }}">${currentBidder.balance}</div>
             </div>
             <div className="text-right">
               <div className="text-slate-400 mb-1">Items Won</div>
@@ -922,7 +923,7 @@ const AuctionApp = () => {
         {/* Current Item */}
         {currentItem && itemActive ? (
           <div className="bg-slate-800 rounded-lg p-6 mb-4 border border-emerald-600/30">
-            <div className="text-emerald-400 text-sm mb-2">Item #{currentItem.number}</div>
+            <div className="style={{ color: '#1e3a8a' }} text-sm mb-2">Item #{currentItem.number}</div>
             <h2 className="text-2xl font-bold text-white mb-4">{currentItem.title}</h2>
             
             {currentItem.imageUrl && (
@@ -933,12 +934,12 @@ const AuctionApp = () => {
               />
             )}
             
-            <p className="text-slate-300 mb-6">{currentItem.description}</p>
+            <p className="style={{ color: '#1e3a8a' }} mb-6">{currentItem.description}</p>
             
             <div className="bg-slate-900 rounded-lg p-4 mb-4">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-slate-400">Time Remaining:</span>
-                <span className={`text-3xl font-bold ${timeRemaining <= 10 ? 'text-red-400 animate-pulse' : 'text-emerald-400'}`}>
+                <span className={`text-3xl font-bold ${timeRemaining <= 10 ? 'text-red-400 animate-pulse' : 'style={{ color: '#1e3a8a' }}'}`}>
                   {Math.floor(timeRemaining / 60)}:{String(timeRemaining % 60).padStart(2, '0')}
                 </span>
               </div>
@@ -955,12 +956,12 @@ const AuctionApp = () => {
                   ? 'bg-emerald-900/30 border-emerald-600/50' 
                   : 'bg-slate-700 border-slate-600'
               }`}>
-                <div className="text-slate-300 mb-1">
+                <div className="style={{ color: '#1e3a8a' }} mb-1">
                   {isHighBidder ? 'You are the high bidder! 🎉' : 'Current High Bid'}
                 </div>
-                <div className="text-3xl font-bold text-emerald-400">${currentHighBid.amount}</div>
+                <div className="text-3xl font-bold style={{ color: '#1e3a8a' }}">${currentHighBid.amount}</div>
                 {!isHighBidder && (
-                  <div className="text-slate-300">by {currentHighBid.bidder}</div>
+                  <div style={{ color: '#1e3a8a' }}>by {currentHighBid.bidder}</div>
                 )}
               </div>
             ) : (
@@ -1004,7 +1005,7 @@ const AuctionApp = () => {
                   value={customBidAmount}
                   onChange={(e) => setCustomBidAmount(e.target.value)}
                   placeholder="Custom amount"
-                  className="flex-1 p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="flex-1 p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-emerald-500 focus:outline-none"
                 />
                 <button
                   onClick={() => customBidAmount && placeBid(parseInt(customBidAmount))}
@@ -1018,12 +1019,12 @@ const AuctionApp = () => {
             {/* Recent Bids */}
             {currentBids.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-lg font-bold text-emerald-400 mb-3">Recent Bids</h3>
+                <h3 className="text-lg font-bold style={{ color: '#1e3a8a' }} mb-3">Recent Bids</h3>
                 <div className="space-y-2 max-h-32 overflow-y-auto">
                   {[...currentBids].reverse().slice(0, 5).map((bid) => (
                     <div key={bid.id} className="bg-slate-700 p-2 rounded flex justify-between items-center text-sm">
                       <span className="text-white">{bid.bidder}</span>
-                      <span className="text-emerald-400 font-bold">${bid.amount}</span>
+                      <span className="style={{ color: '#1e3a8a' }} font-bold">${bid.amount}</span>
                     </div>
                   ))}
                 </div>
@@ -1041,7 +1042,7 @@ const AuctionApp = () => {
         {/* Your Wins */}
         {currentBidder.itemsWon.length > 0 && (
           <div className="bg-slate-800 rounded-lg p-6 border border-emerald-600/30">
-            <h3 className="text-xl font-bold text-emerald-400 mb-4">Your Wins</h3>
+            <h3 className="text-xl font-bold style={{ color: '#1e3a8a' }} mb-4">Your Wins</h3>
             <div className="space-y-3">
               {currentBidder.itemsWon.map((item) => (
                 <div key={item.id} className="bg-slate-700 p-4 rounded-lg flex items-center gap-3">
@@ -1050,15 +1051,15 @@ const AuctionApp = () => {
                   )}
                   <div className="flex-1">
                     <div className="font-bold text-white">#{item.number} - {item.title}</div>
-                    <div className="text-emerald-400">${item.winningBid}</div>
+                    <div style={{ color: '#1e3a8a' }}>${item.winningBid}</div>
                   </div>
                 </div>
               ))}
             </div>
             <div className="mt-4 pt-4 border-t border-slate-600">
               <div className="flex justify-between items-center text-lg">
-                <span className="text-slate-300">Total Spent:</span>
-                <span className="text-emerald-400 font-bold">
+                <span style={{ color: '#1e3a8a' }}>Total Spent:</span>
+                <span className="style={{ color: '#1e3a8a' }} font-bold">
                   ${currentBidder.itemsWon.reduce((sum, item) => sum + item.winningBid, 0)}
                 </span>
               </div>
@@ -1101,7 +1102,7 @@ const AuctionApp = () => {
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 p-4">
           <div className="max-w-2xl mx-auto">
             <div className="bg-slate-800 rounded-lg p-8 text-center border border-emerald-600/30">
-              <h2 className="text-2xl font-bold text-emerald-400 mb-6">Choose Your View</h2>
+              <h2 className="text-2xl font-bold style={{ color: '#1e3a8a' }} mb-6">Choose Your View</h2>
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setIsAuctioneer(true)}
