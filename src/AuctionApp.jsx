@@ -1032,7 +1032,7 @@ const AuctionApp = () => {
     );
   }
   
-  // Auctioneer view - simplified for now, you can expand this
+  // Auctioneer view
   return (
     <div style={{ 
       minHeight: '100vh', 
@@ -1041,6 +1041,7 @@ const AuctionApp = () => {
       fontFamily: 'Georgia, serif'
     }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        {/* Header */}
         <div style={{ ...cardStyle, marginBottom: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
@@ -1088,11 +1089,406 @@ const AuctionApp = () => {
           </div>
         </div>
         
-        <p style={{ textAlign: 'center', color: colors.navy, fontSize: '18px' }}>
-          Auctioneer view - Full implementation would go here with item management, bidder tracking, etc.
-          The core functionality is complete - this view can be expanded based on your needs!
-        </p>
+        {/* Current Item (if active) */}
+        {currentItem && itemActive && (
+          <div style={{ ...cardStyle, marginBottom: '20px' }}>
+            <div style={{ fontSize: '12px', color: colors.emerald, marginBottom: '8px', fontWeight: '600' }}>
+              CURRENTLY ACTIVE
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+              <div>
+                <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: colors.navy, margin: '0 0 8px 0' }}>
+                  #{currentItem.number} - {currentItem.title}
+                </h2>
+                <p style={{ fontSize: '14px', color: colors.lightText, marginBottom: '16px' }}>
+                  {currentItem.description}
+                </p>
+                {currentItem.imageUrl && (
+                  <img 
+                    src={currentItem.imageUrl} 
+                    alt={currentItem.title}
+                    style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', borderRadius: '8px' }}
+                  />
+                )}
+              </div>
+              <div>
+                <div style={{
+                  backgroundColor: colors.cream,
+                  padding: '16px',
+                  borderRadius: '8px',
+                  marginBottom: '16px',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: '14px', color: colors.lightText, marginBottom: '4px' }}>
+                    Time Remaining
+                  </div>
+                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: timeRemaining <= 10 ? '#ef4444' : colors.navy }}>
+                    {Math.floor(timeRemaining / 60)}:{String(timeRemaining % 60).padStart(2, '0')}
+                  </div>
+                </div>
+                
+                {currentHighBid ? (
+                  <div style={{
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    marginBottom: '16px',
+                    textAlign: 'center',
+                    border: `2px solid ${colors.emerald}`
+                  }}>
+                    <div style={{ fontSize: '14px', color: colors.lightText, marginBottom: '4px' }}>
+                      Current High Bid
+                    </div>
+                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: colors.emerald }}>
+                      ${currentHighBid.amount}
+                    </div>
+                    <div style={{ fontSize: '14px', color: colors.navy }}>
+                      by {currentHighBid.bidder}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{
+                    backgroundColor: colors.cream,
+                    padding: '16px',
+                    borderRadius: '8px',
+                    marginBottom: '16px',
+                    textAlign: 'center'
+                  }}>
+                    <div style={{ fontSize: '14px', color: colors.lightText }}>
+                      No bids yet
+                    </div>
+                  </div>
+                )}
+                
+                <button
+                  onClick={() => {
+                    endCurrentItem();
+                  }}
+                  style={{
+                    ...buttonStyle,
+                    width: '100%',
+                    backgroundColor: '#ef4444',
+                    boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)'
+                  }}
+                >
+                  End Item
+                </button>
+              </div>
+            </div>
+            
+            {/* Bid history */}
+            {currentBids.length > 0 && (
+              <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${colors.border}` }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: colors.navy, marginBottom: '12px' }}>
+                  Bid History
+                </h3>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {[...currentBids].reverse().slice(0, 10).map((bid) => (
+                    <div key={bid.id} style={{
+                      backgroundColor: colors.cream,
+                      padding: '8px 16px',
+                      borderRadius: '6px',
+                      fontSize: '14px'
+                    }}>
+                      <span style={{ color: colors.navy, fontWeight: 'bold' }}>{bid.bidder}</span>
+                      <span style={{ color: colors.lightText, margin: '0 4px' }}>•</span>
+                      <span style={{ color: colors.emerald, fontWeight: 'bold' }}>${bid.amount}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
+          {/* Items List */}
+          <div style={cardStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: colors.navy, margin: 0 }}>
+                Auction Items ({sortedItems.length})
+              </h3>
+              <button
+                onClick={() => setShowSetupModal(true)}
+                style={{
+                  ...buttonStyle,
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  boxShadow: 'none'
+                }}
+              >
+                <Settings size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+                Manage
+              </button>
+            </div>
+            <div style={{ maxHeight: '600px', overflow: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {sortedItems.map((item, idx) => (
+                <div key={item.id} style={{
+                  backgroundColor: idx === currentItemIndex ? 'rgba(16, 185, 129, 0.1)' : colors.cream,
+                  padding: '12px',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  gap: '12px',
+                  alignItems: 'center',
+                  border: idx === currentItemIndex ? `2px solid ${colors.emerald}` : `1px solid ${colors.border}`
+                }}>
+                  {item.imageUrl && (
+                    <img src={item.imageUrl} alt={item.title} style={{ 
+                      width: '60px', 
+                      height: '60px', 
+                      objectFit: 'cover', 
+                      borderRadius: '6px' 
+                    }} />
+                  )}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 'bold', color: colors.navy, fontSize: '14px' }}>
+                      #{item.number} - {item.title}
+                    </div>
+                    {item.winner ? (
+                      <div style={{ fontSize: '12px', color: colors.emerald, marginTop: '2px' }}>
+                        Winner: {item.winner} - ${item.winningBid}
+                      </div>
+                    ) : idx === currentItemIndex ? (
+                      <div style={{ fontSize: '12px', color: colors.emerald, marginTop: '2px' }}>
+                        Currently Active
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '12px', color: colors.lightText, marginTop: '2px' }}>
+                        Not started
+                      </div>
+                    )}
+                  </div>
+                  {!item.winner && !itemActive && idx !== currentItemIndex && (
+                    <button
+                      onClick={() => startItem(idx)}
+                      style={{
+                        ...buttonStyle,
+                        padding: '6px 16px',
+                        fontSize: '14px',
+                        boxShadow: 'none'
+                      }}
+                    >
+                      Start
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Bidders Panel */}
+          <div style={cardStyle}>
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
+              Bidders
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {bidders.map((bidder) => (
+                <div key={bidder.name} style={{
+                  backgroundColor: colors.cream,
+                  padding: '12px',
+                  borderRadius: '8px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <span style={{ fontWeight: 'bold', color: colors.navy }}>{bidder.name}</span>
+                    <span style={{ fontSize: '18px', fontWeight: 'bold', color: colors.emerald }}>
+                      ${bidder.balance}
+                    </span>
+                  </div>
+                  {bidder.itemsWon.length > 0 && (
+                    <div style={{ fontSize: '12px', color: colors.lightText }}>
+                      Won {bidder.itemsWon.length} item{bidder.itemsWon.length !== 1 ? 's' : ''}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${colors.border}` }}>
+              <button
+                onClick={exportData}
+                style={{
+                  ...buttonStyle,
+                  width: '100%',
+                  backgroundColor: colors.white,
+                  color: colors.navy,
+                  border: `2px solid ${colors.navy}`,
+                  boxShadow: 'none',
+                  marginBottom: '8px'
+                }}
+              >
+                <Download size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
+                Export Data
+              </button>
+              <label style={{ display: 'block' }}>
+                <input type="file" accept=".json" onChange={importData} style={{ display: 'none' }} />
+                <div style={{
+                  ...buttonStyle,
+                  width: '100%',
+                  backgroundColor: colors.white,
+                  color: colors.navy,
+                  border: `2px solid ${colors.navy}`,
+                  boxShadow: 'none',
+                  textAlign: 'center'
+                }}>
+                  <Upload size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
+                  Import Data
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
+      
+      {showSetupModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          zIndex: 50
+        }}>
+          <div style={{
+            ...cardStyle,
+            maxWidth: '900px',
+            width: '100%',
+            maxHeight: '90vh',
+            overflow: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: colors.navy, margin: 0 }}>
+                Manage Auction Items
+              </h2>
+              <button
+                onClick={() => setShowSetupModal(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: colors.lightText
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <ItemForm onSubmit={addItem} colors={colors} inputStyle={inputStyle} labelStyle={labelStyle} buttonStyle={buttonStyle} />
+            
+            <div style={{ marginTop: '32px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
+                Items ({items.length})
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {sortedItems.map((item) => (
+                  <div key={item.id} style={{
+                    backgroundColor: colors.cream,
+                    padding: '16px',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    gap: '16px',
+                    alignItems: 'center',
+                    border: `1px solid ${colors.border}`
+                  }}>
+                    {item.imageUrl && (
+                      <img src={item.imageUrl} alt={item.title} style={{ 
+                        width: '80px', 
+                        height: '80px', 
+                        objectFit: 'cover', 
+                        borderRadius: '6px' 
+                      }} />
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 'bold', color: colors.navy }}>
+                        #{item.number} - {item.title}
+                      </div>
+                      <div style={{ fontSize: '14px', color: colors.lightText, marginTop: '4px' }}>
+                        {item.description}
+                      </div>
+                      {item.winner && (
+                        <div style={{ fontSize: '14px', color: colors.emerald, marginTop: '4px' }}>
+                          Winner: {item.winner} - ${item.winningBid}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        onClick={() => setEditingItem(item)}
+                        style={{
+                          ...buttonStyle,
+                          padding: '8px 16px',
+                          fontSize: '14px',
+                          boxShadow: 'none'
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteItem(item.id)}
+                        style={{
+                          ...buttonStyle,
+                          backgroundColor: '#ef4444',
+                          padding: '8px 16px',
+                          fontSize: '14px',
+                          boxShadow: 'none'
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {editingItem && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          zIndex: 60
+        }}>
+          <div style={{ ...cardStyle, maxWidth: '600px', width: '100%' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
+              Edit Item
+            </h3>
+            <ItemForm 
+              initialData={editingItem}
+              onSubmit={(data) => updateItem(editingItem.id, data)}
+              onCancel={() => setEditingItem(null)}
+              colors={colors}
+              inputStyle={inputStyle}
+              labelStyle={labelStyle}
+              buttonStyle={buttonStyle}
+            />
+          </div>
+        </div>
+      )}
+      
+      {notification && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          backgroundColor: colors.emerald,
+          color: colors.white,
+          padding: '16px 24px',
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          zIndex: 100
+        }}>
+          {notification}
+        </div>
+      )}
     </div>
   );
 };
