@@ -767,21 +767,38 @@ const AuctionApp = () => {
                   December Debutantes Auction
                 </p>
               </div>
-              <button
-                onClick={handleLogout}
-                style={{
-                  ...buttonStyle,
-                  backgroundColor: colors.white,
-                  color: colors.navy,
-                  border: `2px solid ${colors.navy}`,
-                  padding: '8px 16px',
-                  fontSize: '14px',
-                  boxShadow: 'none'
-                }}
-              >
-                <LogOut size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
-                Logout
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {currentBidder.name === 'Miguel' && (
+                  <button
+                    onClick={() => setIsAuctioneer(true)}
+                    style={{
+                      ...buttonStyle,
+                      backgroundColor: colors.emerald,
+                      padding: '8px 16px',
+                      fontSize: '14px',
+                      boxShadow: 'none'
+                    }}
+                  >
+                    <Gavel size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+                    Auctioneer
+                  </button>
+                )}
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    ...buttonStyle,
+                    backgroundColor: colors.white,
+                    color: colors.navy,
+                    border: `2px solid ${colors.navy}`,
+                    padding: '8px 16px',
+                    fontSize: '14px',
+                    boxShadow: 'none'
+                  }}
+                >
+                  <LogOut size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
           
