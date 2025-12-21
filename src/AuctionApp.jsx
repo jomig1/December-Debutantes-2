@@ -181,6 +181,21 @@ const AuctionApp = () => {
   };
   
   const handleLogin = (name, password) => {
+    // Check if setup is complete
+    if (!auctioneerPassword || !bidders.every(b => b.password)) {
+      if (name === 'auctioneer') {
+        // Allow auctioneer to login even without setup to do initial setup
+        setIsAuctioneer(true);
+        setCurrentUser('auctioneer');
+        showNotification('Please complete setup - set all passwords and add items');
+        setShowSetupModal(true);
+        return;
+      } else {
+        showNotification('Setup incomplete - please contact auctioneer');
+        return;
+      }
+    }
+    
     if (name === 'auctioneer' && password === auctioneerPassword) {
       setIsAuctioneer(true);
       setCurrentUser('auctioneer');
@@ -226,12 +241,14 @@ const AuctionApp = () => {
       showNotification('End current item first');
       return;
     }
+    const now = Date.now();
     setCurrentItemIndex(index);
     setCurrentBids([]);
     setTimeRemaining(300);
     setItemActive(true);
-    setLastBidTime(null);
-    lastBidTimeRef.current = null;
+    setLastBidTime(now);
+    lastBidTimeRef.current = now;
+    setIsPaused(false);
     showNotification(`Started: ${sortedItems[index].title}`);
   };
   
@@ -481,8 +498,9 @@ const AuctionApp = () => {
   // Check if setup is actually complete by looking at the data
   const isSetupComplete = auctioneerPassword && bidders.every(b => b.password);
 
-  // Render setup view
-  if (!isSetupComplete) {
+  // Always show login screen first - setup is handled through auctioneer panel
+  // This way bidders never see setup screen
+  if (!currentUser) {
     return (
       <div style={{ 
         minHeight: '100vh', 
@@ -1548,6 +1566,19 @@ const AuctionApp = () => {
             </div>
             
             <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${colors.border}` }}>
+              <button
+                onClick={() => setShowSetupModal(true)}
+                style={{
+                  ...buttonStyle,
+                  width: '100%',
+                  backgroundColor: colors.emerald,
+                  marginBottom: '20px'
+                }}
+              >
+                <Settings size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
+                Setup Passwords & Items
+              </button>
+              
               <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: colors.navy, marginBottom: '12px' }}>
                 Data Management
               </h4>
@@ -1657,7 +1688,7 @@ const AuctionApp = () => {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: colors.navy, margin: 0 }}>
-                Manage Auction Items
+                Setup & Manage Auction
               </h2>
               <button
                 onClick={() => setShowSetupModal(false)}
@@ -1672,6 +1703,54 @@ const AuctionApp = () => {
                 ✕
               </button>
             </div>
+            
+            {/* Password Setup Section */}
+            <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `2px solid ${colors.border}` }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
+                Password Setup
+              </h3>
+              
+              <div style={{ marginBottom: '20px' }}>
+                <label style={labelStyle}>Auctioneer Password</label>
+                <input
+                  type="password"
+                  value={auctioneerPassword}
+                  onChange={(e) => setAuctioneerPassword(e.target.value)}
+                  style={inputStyle}
+                  placeholder="Set auctioneer password"
+                />
+              </div>
+              
+              <h4 style={{ fontSize: '16px', fontWeight: 'bold', color: colors.navy, marginBottom: '12px' }}>
+                Bidder Passwords
+              </h4>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                gap: '16px'
+              }}>
+                {bidders.map((bidder, idx) => (
+                  <div key={bidder.name}>
+                    <label style={labelStyle}>{bidder.name}</label>
+                    <input
+                      type="password"
+                      value={bidder.password}
+                      onChange={(e) => {
+                        const newBidders = [...bidders];
+                        newBidders[idx].password = e.target.value;
+                        setBidders(newBidders);
+                      }}
+                      style={inputStyle}
+                      placeholder="Password"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
+              Manage Items
+            </h3>
             
             <ItemForm onSubmit={addItem} colors={colors} inputStyle={inputStyle} labelStyle={labelStyle} buttonStyle={buttonStyle} />
             
