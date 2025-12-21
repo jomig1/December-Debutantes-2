@@ -495,9 +495,6 @@ const AuctionApp = () => {
     border: `1px solid ${colors.border}`
   };
 
-  // Check if setup is actually complete by looking at the data
-  const isSetupComplete = auctioneerPassword && bidders.every(b => b.password);
-
   // Always show login screen first - setup is handled through auctioneer panel
   // This way bidders never see setup screen
   if (!currentUser) {
