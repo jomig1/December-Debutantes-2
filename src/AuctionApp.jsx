@@ -43,6 +43,7 @@ const AuctionApp = () => {
   const [timeRemaining, setTimeRemaining] = useState(300);
   const [itemActive, setItemActive] = useState(false);
   const [lastBidTime, setLastBidTime] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
   
   // UI state
   const [customBidAmount, setCustomBidAmount] = useState('');
@@ -97,7 +98,7 @@ const AuctionApp = () => {
   
   // Timer logic
   useEffect(() => {
-    if (itemActive && currentItem) {
+    if (itemActive && currentItem && !isPaused) {
       timerRef.current = setInterval(() => {
         setTimeRemaining(prev => {
           const now = Date.now();
@@ -123,7 +124,7 @@ const AuctionApp = () => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [itemActive, currentItem, endCurrentItem]);
+  }, [itemActive, currentItem, endCurrentItem, isPaused]);
   
   useEffect(() => {
     lastBidTimeRef.current = lastBidTime;
@@ -211,6 +212,11 @@ const AuctionApp = () => {
     
     if (!itemActive) {
       showNotification('No active auction');
+      return;
+    }
+    
+    if (isPaused) {
+      showNotification('Auction is paused - bidding disabled');
       return;
     }
     
@@ -342,6 +348,38 @@ const AuctionApp = () => {
         setCurrentBids([]);
         setItemActive(false);
         showNotification('All data has been reset');
+      }
+    }
+  };
+  
+  const pauseAuction = () => {
+    setIsPaused(true);
+    showNotification('Auction paused');
+  };
+  
+  const resumeAuction = () => {
+    setIsPaused(false);
+    showNotification('Auction resumed');
+  };
+  
+  const startNextItem = () => {
+    if (itemActive) {
+      showNotification('Please end current item first');
+      return;
+    }
+    
+    // Find next unwon item
+    const nextUnwonIndex = sortedItems.findIndex((item, idx) => !item.winner && idx > currentItemIndex);
+    
+    if (nextUnwonIndex >= 0) {
+      startItem(nextUnwonIndex);
+    } else {
+      // If no unwon items after current, check from beginning
+      const firstUnwonIndex = sortedItems.findIndex(item => !item.winner);
+      if (firstUnwonIndex >= 0) {
+        startItem(firstUnwonIndex);
+      } else {
+        showNotification('All items have been won!');
       }
     }
   };
@@ -898,23 +936,36 @@ const AuctionApp = () => {
               
               {/* Timer */}
               <div style={{
-                backgroundColor: colors.cream,
+                backgroundColor: isPaused ? 'rgba(245, 158, 11, 0.1)' : colors.cream,
                 padding: '16px',
                 borderRadius: '8px',
                 marginBottom: '24px',
-                border: `2px solid ${timeRemaining <= 10 ? '#ef4444' : colors.border}`
+                border: `2px solid ${isPaused ? '#f59e0b' : timeRemaining <= 10 ? '#ef4444' : colors.border}`
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '14px', color: colors.lightText }}>Time Remaining:</span>
+                  <span style={{ fontSize: '14px', color: colors.lightText }}>
+                    {isPaused ? '⏸️ PAUSED' : 'Time Remaining:'}
+                  </span>
                   <span style={{ 
                     fontSize: '28px', 
                     fontWeight: 'bold', 
-                    color: timeRemaining <= 10 ? '#ef4444' : colors.navy
+                    color: isPaused ? '#f59e0b' : timeRemaining <= 10 ? '#ef4444' : colors.navy
                   }}>
                     {Math.floor(timeRemaining / 60)}:{String(timeRemaining % 60).padStart(2, '0')}
                   </span>
                 </div>
-                {timeRemaining <= 10 && (
+                {isPaused && (
+                  <div style={{ 
+                    textAlign: 'center', 
+                    marginTop: '8px',
+                    color: '#f59e0b',
+                    fontWeight: 'bold',
+                    fontSize: '14px'
+                  }}>
+                    Auction paused by auctioneer
+                  </div>
+                )}
+                {timeRemaining <= 10 && !isPaused && (
                   <div style={{ 
                     textAlign: 'center', 
                     marginTop: '8px',
@@ -1148,6 +1199,85 @@ const AuctionApp = () => {
               </button>
             </div>
           </div>
+        </div>
+        
+        {/* Auction Controls */}
+        <div style={{ ...cardStyle, marginBottom: '20px' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
+            Auction Controls
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+            {!itemActive ? (
+              <button
+                onClick={startNextItem}
+                style={{
+                  ...buttonStyle,
+                  backgroundColor: colors.emerald,
+                  fontSize: '16px',
+                  padding: '16px'
+                }}
+              >
+                ▶️ Start Next Item
+              </button>
+            ) : (
+              <>
+                {isPaused ? (
+                  <button
+                    onClick={resumeAuction}
+                    style={{
+                      ...buttonStyle,
+                      backgroundColor: colors.emerald,
+                      fontSize: '16px',
+                      padding: '16px'
+                    }}
+                  >
+                    ▶️ Resume Auction
+                  </button>
+                ) : (
+                  <button
+                    onClick={pauseAuction}
+                    style={{
+                      ...buttonStyle,
+                      backgroundColor: '#f59e0b',
+                      boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
+                      fontSize: '16px',
+                      padding: '16px'
+                    }}
+                  >
+                    ⏸️ Pause Auction
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    endCurrentItem();
+                  }}
+                  style={{
+                    ...buttonStyle,
+                    backgroundColor: '#ef4444',
+                    boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
+                    fontSize: '16px',
+                    padding: '16px'
+                  }}
+                >
+                  ⏹️ End Current Item
+                </button>
+              </>
+            )}
+          </div>
+          {isPaused && itemActive && (
+            <div style={{
+              marginTop: '12px',
+              padding: '12px',
+              backgroundColor: 'rgba(245, 158, 11, 0.1)',
+              border: '2px solid #f59e0b',
+              borderRadius: '8px',
+              textAlign: 'center',
+              color: '#f59e0b',
+              fontWeight: 'bold'
+            }}>
+              ⏸️ AUCTION PAUSED - Timer stopped, bidding disabled
+            </div>
+          )}
         </div>
         
         {/* Current Item (if active) */}
