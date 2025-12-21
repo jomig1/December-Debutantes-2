@@ -166,20 +166,6 @@ const AuctionApp = () => {
     setTimeout(() => setNotification(''), 3000);
   };
   
-  const handleSetupComplete = () => {
-    if (!auctioneerPassword) {
-      showNotification('Please set an auctioneer password');
-      return;
-    }
-    const allPasswordsSet = bidders.every(b => b.password);
-    if (!allPasswordsSet) {
-      showNotification('Please set passwords for all bidders');
-      return;
-    }
-    setSetupComplete(true);
-    showNotification('Setup complete!');
-  };
-  
   const handleLogin = (name, password) => {
     // Check if setup is complete
     if (!auctioneerPassword || !bidders.every(b => b.password)) {
@@ -495,318 +481,6 @@ const AuctionApp = () => {
     border: `1px solid ${colors.border}`
   };
 
-  // Always show login screen first - setup is handled through auctioneer panel
-  // This way bidders never see setup screen
-  if (!currentUser) {
-    return (
-      <div style={{ 
-        minHeight: '100vh', 
-        backgroundColor: colors.sage,
-        padding: '40px 20px',
-        fontFamily: 'Georgia, serif'
-      }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-            <svg width="100" height="100" viewBox="0 0 100 100" style={{ marginBottom: '16px' }}>
-              <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill={colors.navy} textAnchor="middle">DD</text>
-            </svg>
-            <h1 style={{ 
-              fontSize: '48px', 
-              fontWeight: 'bold', 
-              color: colors.navy,
-              margin: '0 0 8px 0',
-              letterSpacing: '-0.5px'
-            }}>
-              December Debutantes
-            </h1>
-            <p style={{ fontSize: '20px', color: colors.lightText, margin: 0 }}>
-              Christmas Auction Setup
-            </p>
-          </div>
-          
-          <div style={cardStyle}>
-            <h2 style={{ 
-              fontSize: '28px', 
-              fontWeight: 'bold', 
-              color: colors.navy,
-              marginBottom: '32px',
-              borderBottom: `2px solid ${colors.border}`,
-              paddingBottom: '16px'
-            }}>
-              Auction Configuration
-            </h2>
-            
-            <div style={{ marginBottom: '32px' }}>
-              <label style={labelStyle}>Auctioneer Password</label>
-              <input
-                type="password"
-                value={auctioneerPassword}
-                onChange={(e) => setAuctioneerPassword(e.target.value)}
-                style={inputStyle}
-                placeholder="Set auctioneer password"
-              />
-            </div>
-            
-            <div style={{ marginBottom: '32px' }}>
-              <h3 style={{ 
-                fontSize: '20px', 
-                fontWeight: 'bold', 
-                color: colors.navy,
-                marginBottom: '20px'
-              }}>
-                Bidder Passwords
-              </h3>
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                gap: '20px'
-              }}>
-                {bidders.map((bidder, idx) => (
-                  <div key={bidder.name}>
-                    <label style={labelStyle}>{bidder.name}</label>
-                    <input
-                      type="password"
-                      value={bidder.password}
-                      onChange={(e) => {
-                        const newBidders = [...bidders];
-                        newBidders[idx].password = e.target.value;
-                        setBidders(newBidders);
-                      }}
-                      style={inputStyle}
-                      placeholder="Password"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-              <button
-                onClick={handleSetupComplete}
-                style={{ ...buttonStyle, flex: 1, minWidth: '200px' }}
-                onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
-                onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
-              >
-                Complete Setup
-              </button>
-              <button
-                onClick={() => setShowSetupModal(true)}
-                style={{ 
-                  ...buttonStyle, 
-                  backgroundColor: colors.navy,
-                  minWidth: '200px'
-                }}
-              >
-                <Settings size={18} style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-                Add Items
-              </button>
-            </div>
-            
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: '1fr 1fr',
-              gap: '16px',
-              marginTop: '24px',
-              paddingTop: '24px',
-              borderTop: `1px solid ${colors.border}`
-            }}>
-              <button
-                onClick={exportData}
-                style={{
-                  ...buttonStyle,
-                  backgroundColor: colors.white,
-                  color: colors.navy,
-                  border: `2px solid ${colors.navy}`
-                }}
-              >
-                <Download size={18} style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-                Export Data
-              </button>
-              <label>
-                <input type="file" accept=".json" onChange={importData} style={{ display: 'none' }} />
-                <div style={{
-                  ...buttonStyle,
-                  backgroundColor: colors.white,
-                  color: colors.navy,
-                  border: `2px solid ${colors.navy}`,
-                  textAlign: 'center'
-                }}>
-                  <Upload size={18} style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-                  Import Data
-                </div>
-              </label>
-            </div>
-          </div>
-        </div>
-        
-        {showSetupModal && (
-          <div style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-            zIndex: 50
-          }}>
-            <div style={{
-              ...cardStyle,
-              maxWidth: '900px',
-              width: '100%',
-              maxHeight: '90vh',
-              overflow: 'auto'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: colors.navy, margin: 0 }}>
-                  Manage Auction Items
-                </h2>
-                <button
-                  onClick={() => setShowSetupModal(false)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    fontSize: '24px',
-                    cursor: 'pointer',
-                    color: colors.lightText
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-              
-              <ItemForm onSubmit={addItem} colors={colors} inputStyle={inputStyle} labelStyle={labelStyle} buttonStyle={buttonStyle} />
-              
-              <div style={{ marginTop: '32px' }}>
-                <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
-                  Items ({items.length})
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {sortedItems.map((item) => (
-                    <div key={item.id} style={{
-                      backgroundColor: colors.cream,
-                      padding: '16px',
-                      borderRadius: '8px',
-                      display: 'flex',
-                      gap: '16px',
-                      alignItems: 'center',
-                      border: `1px solid ${colors.border}`
-                    }}>
-                      {item.imageUrl && (
-                        <img src={item.imageUrl} alt={item.title} style={{ 
-                          width: '80px', 
-                          height: '80px', 
-                          objectFit: 'cover', 
-                          borderRadius: '6px' 
-                        }} />
-                      )}
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 'bold', color: colors.navy }}>
-                          #{item.number} - {item.title}
-                        </div>
-                        <div style={{ fontSize: '14px', color: colors.lightText, marginTop: '4px' }}>
-                          {item.description}
-                        </div>
-                        {item.winner && (
-                          <div style={{ fontSize: '14px', color: colors.emerald, marginTop: '4px' }}>
-                            Winner: {item.winner} - ${item.winningBid}
-                          </div>
-                        )}
-                      </div>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <button
-                          onClick={() => setEditingItem(item)}
-                          style={{
-                            ...buttonStyle,
-                            padding: '8px 16px',
-                            fontSize: '14px',
-                            boxShadow: 'none'
-                          }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => deleteItem(item.id)}
-                          style={{
-                            ...buttonStyle,
-                            backgroundColor: '#ef4444',
-                            padding: '8px 16px',
-                            fontSize: '14px',
-                            boxShadow: 'none'
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {editingItem && (
-          <div style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-            zIndex: 60
-          }}>
-            <div style={{ ...cardStyle, maxWidth: '600px', width: '100%' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
-                Edit Item
-              </h3>
-              <ItemForm 
-                initialData={editingItem}
-                onSubmit={(data) => updateItem(editingItem.id, data)}
-                onCancel={() => setEditingItem(null)}
-                colors={colors}
-                inputStyle={inputStyle}
-                labelStyle={labelStyle}
-                buttonStyle={buttonStyle}
-              />
-            </div>
-          </div>
-        )}
-        
-        {notification && (
-          <div style={{
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            backgroundColor: colors.emerald,
-            color: colors.white,
-            padding: '16px 24px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            zIndex: 100,
-            animation: 'slideIn 0.3s ease-out'
-          }}>
-            {notification}
-          </div>
-        )}
-        
-        <style>{`
-          @keyframes slideIn {
-            from {
-              transform: translateX(100%);
-              opacity: 0;
-            }
-            to {
-              transform: translateX(0);
-              opacity: 1;
-            }
-          }
-        `}</style>
-      </div>
-    );
-  }
-  
   // Login view
   if (!currentUser) {
     return (
@@ -821,9 +495,16 @@ const AuctionApp = () => {
       }}>
         <div style={{ ...cardStyle, maxWidth: '450px', width: '100%' }}>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <svg width="100" height="100" viewBox="0 0 100 100" style={{ marginBottom: '16px' }}>
-              <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill={colors.navy} textAnchor="middle">DD</text>
-            </svg>
+            <img 
+              src="https://i.imgur.com/V3Xmu6V.png" 
+              alt="December Debutantes Logo"
+              style={{ 
+                width: '120px',
+                height: '120px',
+                marginBottom: '16px',
+                filter: 'brightness(0) saturate(100%) invert(15%) sepia(95%) saturate(2000%) hue-rotate(210deg) brightness(0.8)'
+              }}
+            />
             <h1 style={{ 
               fontSize: '36px', 
               fontWeight: 'bold', 
@@ -906,6 +587,19 @@ const AuctionApp = () => {
         fontFamily: 'Georgia, serif'
       }}>
         <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+          {/* Logo */}
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <img 
+              src="https://i.imgur.com/V3Xmu6V.png" 
+              alt="December Debutantes Logo"
+              style={{ 
+                width: '80px',
+                height: '80px',
+                filter: 'brightness(0) saturate(100%) invert(15%) sepia(95%) saturate(2000%) hue-rotate(210deg) brightness(0.8)'
+              }}
+            />
+          </div>
+          
           {/* Header */}
           <div style={{ ...cardStyle, marginBottom: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1221,6 +915,19 @@ const AuctionApp = () => {
       fontFamily: 'Georgia, serif'
     }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <img 
+            src="https://i.imgur.com/V3Xmu6V.png" 
+            alt="December Debutantes Logo"
+            style={{ 
+              width: '100px',
+              height: '100px',
+              filter: 'brightness(0) saturate(100%) invert(15%) sepia(95%) saturate(2000%) hue-rotate(210deg) brightness(0.8)'
+            }}
+          />
+        </div>
+        
         {/* Header */}
         <div style={{ ...cardStyle, marginBottom: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
