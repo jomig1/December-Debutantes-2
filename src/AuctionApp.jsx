@@ -29,11 +29,27 @@ const INITIAL_BIDDERS = [
 ];
 
 const AuctionApp = () => {
+  // Load initial data from localStorage if available
+  const loadFromStorage = (key, defaultValue) => {
+    try {
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  };
+
   // Core state
   const [setupComplete, setSetupComplete] = useState(false);
-  const [auctioneerPassword, setAuctioneerPassword] = useState('');
-  const [bidders, setBidders] = useState(INITIAL_BIDDERS);
-  const [items, setItems] = useState([]);
+  const [auctioneerPassword, setAuctioneerPassword] = useState(() => 
+    loadFromStorage('auctioneerPassword', '')
+  );
+  const [bidders, setBidders] = useState(() => 
+    loadFromStorage('bidders', INITIAL_BIDDERS)
+  );
+  const [items, setItems] = useState(() => 
+    loadFromStorage('items', [])
+  );
   const [currentUser, setCurrentUser] = useState(null);
   const [isAuctioneer, setIsAuctioneer] = useState(false);
   
@@ -129,6 +145,21 @@ const AuctionApp = () => {
   useEffect(() => {
     lastBidTimeRef.current = lastBidTime;
   }, [lastBidTime]);
+  
+  // Save critical setup data to localStorage so all users see it
+  useEffect(() => {
+    if (auctioneerPassword) {
+      localStorage.setItem('auctioneerPassword', JSON.stringify(auctioneerPassword));
+    }
+  }, [auctioneerPassword]);
+  
+  useEffect(() => {
+    localStorage.setItem('bidders', JSON.stringify(bidders));
+  }, [bidders]);
+  
+  useEffect(() => {
+    localStorage.setItem('items', JSON.stringify(items));
+  }, [items]);
   
   const showNotification = (message) => {
     setNotification(message);
@@ -282,12 +313,24 @@ const AuctionApp = () => {
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target.result);
-        setAuctioneerPassword(data.auctioneerPassword || '');
-        setBidders(data.bidders || INITIAL_BIDDERS);
-        setItems(data.items || []);
+        
+        // Update state
+        const newPassword = data.auctioneerPassword || '';
+        const newBidders = data.bidders || INITIAL_BIDDERS;
+        const newItems = data.items || [];
+        
+        setAuctioneerPassword(newPassword);
+        setBidders(newBidders);
+        setItems(newItems);
         setCurrentItemIndex(data.currentItemIndex ?? -1);
         setCurrentBids(data.currentBids || []);
         setSetupComplete(data.setupComplete || false);
+        
+        // Also save to localStorage so all users see it
+        localStorage.setItem('auctioneerPassword', JSON.stringify(newPassword));
+        localStorage.setItem('bidders', JSON.stringify(newBidders));
+        localStorage.setItem('items', JSON.stringify(newItems));
+        
         showNotification('Data imported');
       } catch (err) {
         showNotification('Error importing data');
@@ -347,6 +390,13 @@ const AuctionApp = () => {
         setCurrentItemIndex(-1);
         setCurrentBids([]);
         setItemActive(false);
+        setAuctioneerPassword('');
+        
+        // Clear localStorage
+        localStorage.removeItem('auctioneerPassword');
+        localStorage.removeItem('bidders');
+        localStorage.removeItem('items');
+        
         showNotification('All data has been reset');
       }
     }
@@ -428,8 +478,11 @@ const AuctionApp = () => {
     border: `1px solid ${colors.border}`
   };
 
+  // Check if setup is actually complete by looking at the data
+  const isSetupComplete = auctioneerPassword && bidders.every(b => b.password);
+
   // Render setup view
-  if (!setupComplete) {
+  if (!isSetupComplete) {
     return (
       <div style={{ 
         minHeight: '100vh', 
