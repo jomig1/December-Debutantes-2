@@ -1412,7 +1412,8 @@ const AuctionApp = () => {
               <div style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-                gap: '16px'
+                gap: '16px',
+                marginBottom: '20px'
               }}>
                 {bidders.map((bidder, idx) => (
                   <div key={bidder.name}>
@@ -1431,17 +1432,38 @@ const AuctionApp = () => {
                   </div>
                 ))}
               </div>
+              
+              <button
+                onClick={() => {
+                  if (!auctioneerPassword) {
+                    showNotification('Please set an auctioneer password');
+                    return;
+                  }
+                  const allPasswordsSet = bidders.every(b => b.password);
+                  if (!allPasswordsSet) {
+                    showNotification('Please set passwords for all bidders');
+                    return;
+                  }
+                  showNotification('Passwords saved!');
+                }}
+                style={{
+                  ...buttonStyle,
+                  width: '100%'
+                }}
+              >
+                💾 Save Passwords
+              </button>
             </div>
             
             <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
-              Manage Items
+              Add New Item
             </h3>
             
             <ItemForm onSubmit={addItem} colors={colors} inputStyle={inputStyle} labelStyle={labelStyle} buttonStyle={buttonStyle} />
             
-            <div style={{ marginTop: '32px' }}>
+            <div style={{ marginTop: '32px', paddingTop: '32px', borderTop: `2px solid ${colors.border}` }}>
               <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
-                Items ({items.length})
+                All Items ({items.length})
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {sortedItems.map((item) => (
