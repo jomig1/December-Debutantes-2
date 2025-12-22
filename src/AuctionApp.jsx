@@ -238,6 +238,9 @@ const AuctionApp = () => {
   };
   
   const handleLogin = (name, password) => {
+    console.log('Login attempt:', name, password);
+    console.log('Current bidders:', bidders);
+    
     // Check if auctioneer trying to login without password set
     if (name === 'auctioneer' && !auctioneerPassword) {
       // Allow auctioneer to login even without setup to do initial setup
@@ -256,11 +259,13 @@ const AuctionApp = () => {
     }
     
     const bidder = bidders.find(b => b.name === name && b.password === password);
+    console.log('Found bidder:', bidder);
     if (bidder) {
       setCurrentUser(name);
       setIsAuctioneer(false);
       showNotification(`Welcome, ${name}!`);
     } else {
+      console.log('Login failed - checking all bidders:', bidders.map(b => ({ name: b.name, hasPassword: !!b.password })));
       showNotification('Invalid credentials');
     }
   };
