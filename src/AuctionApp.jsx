@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Gavel, Download, Upload, Settings, LogOut, User } from 'lucide-react';
+import { database } from './firebase-config';
+import { ref, set, onValue, update, get } from 'firebase/database';
 
 // Color palette
 const colors = {
@@ -29,37 +31,110 @@ const INITIAL_BIDDERS = [
 ];
 
 const AuctionApp = () => {
-  // Load initial data from localStorage if available
-  const loadFromStorage = (key, defaultValue) => {
-    try {
-      const saved = localStorage.getItem(key);
-      return saved ? JSON.parse(saved) : defaultValue;
-    } catch {
-      return defaultValue;
-    }
-  };
-
-  // Core state
+  // Core state - will be synced with Firebase
   const [setupComplete, setSetupComplete] = useState(false);
-  const [auctioneerPassword, setAuctioneerPassword] = useState(() => 
-    loadFromStorage('auctioneerPassword', '')
-  );
-  const [bidders, setBidders] = useState(() => 
-    loadFromStorage('bidders', INITIAL_BIDDERS)
-  );
-  const [items, setItems] = useState(() => 
-    loadFromStorage('items', [])
-  );
+  const [auctioneerPassword, setAuctioneerPassword] = useState('');
+  const [bidders, setBidders] = useState(INITIAL_BIDDERS);
+  const [items, setItems] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [isAuctioneer, setIsAuctioneer] = useState(false);
   
-  // Auction state
+  // Auction state - will be synced with Firebase
   const [currentItemIndex, setCurrentItemIndex] = useState(-1);
   const [currentBids, setCurrentBids] = useState([]);
   const [timeRemaining, setTimeRemaining] = useState(300);
   const [itemActive, setItemActive] = useState(false);
   const [lastBidTime, setLastBidTime] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
+  
+  // Firebase sync - Load all data from Firebase on mount
+  useEffect(() => {
+    // Listen to passwords
+    const passwordsRef = ref(database, 'passwords');
+    const unsubPasswords = onValue(passwordsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        if (data.auctioneer) setAuctioneerPassword(data.auctioneer);
+      }
+    });
+    
+    // Listen to bidders
+    const biddersRef = ref(database, 'bidders');
+    const unsubBidders = onValue(biddersRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setBidders(data);
+      }
+    });
+    
+    // Listen to items
+    const itemsRef = ref(database, 'items');
+    const unsubItems = onValue(itemsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setItems(data);
+      }
+    });
+    
+    // Listen to auction state
+    const auctionRef = ref(database, 'auction');
+    const unsubAuction = onValue(auctionRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setCurrentItemIndex(data.currentItemIndex ?? -1);
+        setCurrentBids(data.currentBids || []);
+        setTimeRemaining(data.timeRemaining ?? 300);
+        setItemActive(data.itemActive ?? false);
+        setLastBidTime(data.lastBidTime ?? null);
+        setIsPaused(data.isPaused ?? false);
+      }
+    });
+    
+    // Cleanup listeners on unmount
+    return () => {
+      unsubPasswords();
+      unsubBidders();
+      unsubItems();
+      unsubAuction();
+    };
+  }, []);
+  
+  // Helper function to update Firebase
+  const updateFirebase = async (path, data) => {
+    try {
+      await set(ref(database, path), data);
+    } catch (error) {
+      console.error('Firebase update error:', error);
+      showNotification('Error syncing data');
+    }
+  };
+  
+  // Sync bidders to Firebase whenever they change
+  useEffect(() => {
+    if (bidders && bidders.length > 0) {
+      updateFirebase('bidders', bidders);
+    }
+  }, [bidders]);
+  
+  // Sync items to Firebase whenever they change
+  useEffect(() => {
+    if (items) {
+      updateFirebase('items', items);
+    }
+  }, [items]);
+  
+  // Sync auction state to Firebase
+  useEffect(() => {
+    const auctionState = {
+      currentItemIndex,
+      currentBids,
+      timeRemaining,
+      itemActive,
+      lastBidTime,
+      isPaused
+    };
+    updateFirebase('auction', auctionState);
+  }, [currentItemIndex, currentBids, timeRemaining, itemActive, lastBidTime, isPaused]);
   
   // UI state
   const [customBidAmount, setCustomBidAmount] = useState('');
@@ -148,20 +223,12 @@ const AuctionApp = () => {
     lastBidTimeRef.current = lastBidTime;
   }, [lastBidTime]);
   
-  // Save critical setup data to localStorage so all users see it
+  // Sync auctioneer password to Firebase
   useEffect(() => {
     if (auctioneerPassword) {
-      localStorage.setItem('auctioneerPassword', JSON.stringify(auctioneerPassword));
+      updateFirebase('passwords/auctioneer', auctioneerPassword);
     }
   }, [auctioneerPassword]);
-  
-  useEffect(() => {
-    localStorage.setItem('bidders', JSON.stringify(bidders));
-  }, [bidders]);
-  
-  useEffect(() => {
-    localStorage.setItem('items', JSON.stringify(items));
-  }, [items]);
   
   const showNotification = (message) => {
     setNotification(message);
@@ -326,12 +393,12 @@ const AuctionApp = () => {
         setCurrentBids(data.currentBids || []);
         setSetupComplete(data.setupComplete || false);
         
-        // Also save to localStorage so all users see it
-        localStorage.setItem('auctioneerPassword', JSON.stringify(newPassword));
-        localStorage.setItem('bidders', JSON.stringify(newBidders));
-        localStorage.setItem('items', JSON.stringify(newItems));
+        // Sync to Firebase
+        await updateFirebase('passwords/auctioneer', newPassword);
+        await updateFirebase('bidders', newBidders);
+        await updateFirebase('items', newItems);
         
-        showNotification('Data imported');
+        showNotification('Data imported and synced to all devices');
       } catch (err) {
         showNotification('Error importing data');
       }
@@ -382,7 +449,7 @@ const AuctionApp = () => {
     }
   };
   
-  const resetAllData = () => {
+  const resetAllData = async () => {
     if (window.confirm('⚠️ RESET EVERYTHING? This will delete all items, bids, and winners. Cannot be undone!')) {
       if (window.confirm('Are you ABSOLUTELY SURE? This action is permanent!')) {
         setBidders(INITIAL_BIDDERS);
@@ -392,12 +459,20 @@ const AuctionApp = () => {
         setItemActive(false);
         setAuctioneerPassword('');
         
-        // Clear localStorage
-        localStorage.removeItem('auctioneerPassword');
-        localStorage.removeItem('bidders');
-        localStorage.removeItem('items');
+        // Clear Firebase
+        await updateFirebase('passwords/auctioneer', '');
+        await updateFirebase('bidders', INITIAL_BIDDERS);
+        await updateFirebase('items', []);
+        await updateFirebase('auction', {
+          currentItemIndex: -1,
+          currentBids: [],
+          timeRemaining: 300,
+          itemActive: false,
+          lastBidTime: null,
+          isPaused: false
+        });
         
-        showNotification('All data has been reset');
+        showNotification('All data has been reset and synced');
       }
     }
   };
