@@ -724,7 +724,7 @@ const AuctionApp = () => {
                   Items Won
                 </div>
                 <div style={{ fontSize: '36px', fontWeight: 'bold', color: colors.navy }}>
-                  {currentBidder.itemsWon.length}
+                  {currentBidder.itemsWon ? currentBidder.itemsWon.length : 0}
                 </div>
               </div>
             </div>
@@ -897,7 +897,7 @@ const AuctionApp = () => {
           )}
           
           {/* Your wins */}
-          {currentBidder.itemsWon.length > 0 && (
+          {currentBidder.itemsWon && currentBidder.itemsWon.length > 0 && (
             <div style={{ ...cardStyle, marginTop: '20px' }}>
               <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
                 Your Wins
@@ -1323,7 +1323,7 @@ const AuctionApp = () => {
                       ${bidder.balance}
                     </span>
                   </div>
-                  {bidder.itemsWon.length > 0 && (
+                  {bidder.itemsWon && bidder.itemsWon.length > 0 && (
                     <div style={{ fontSize: '12px', color: colors.lightText }}>
                       Won {bidder.itemsWon.length} item{bidder.itemsWon.length !== 1 ? 's' : ''}
                     </div>
