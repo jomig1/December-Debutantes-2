@@ -168,19 +168,14 @@ const AuctionApp = () => {
   };
   
   const handleLogin = (name, password) => {
-    // Check if setup is complete
-    if (!auctioneerPassword || !bidders.every(b => b.password)) {
-      if (name === 'auctioneer') {
-        // Allow auctioneer to login even without setup to do initial setup
-        setIsAuctioneer(true);
-        setCurrentUser('auctioneer');
-        showNotification('Please complete setup - set all passwords and add items');
-        setShowPasswordModal(true);
-        return;
-      } else {
-        showNotification('Setup incomplete - please contact auctioneer');
-        return;
-      }
+    // Check if auctioneer trying to login without password set
+    if (name === 'auctioneer' && !auctioneerPassword) {
+      // Allow auctioneer to login even without setup to do initial setup
+      setIsAuctioneer(true);
+      setCurrentUser('auctioneer');
+      showNotification('Please complete setup - set all passwords and add items');
+      setShowPasswordModal(true);
+      return;
     }
     
     if (name === 'auctioneer' && password === auctioneerPassword) {
