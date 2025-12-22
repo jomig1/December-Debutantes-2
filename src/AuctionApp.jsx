@@ -495,16 +495,9 @@ const AuctionApp = () => {
       }}>
         <div style={{ ...cardStyle, maxWidth: '450px', width: '100%' }}>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <img 
-              src="https://i.imgur.com/V3Xmu6V.png" 
-              alt="December Debutantes Logo"
-              style={{ 
-                width: '120px',
-                height: '120px',
-                marginBottom: '16px',
-                filter: 'brightness(0) saturate(100%) invert(15%) sepia(95%) saturate(2000%) hue-rotate(210deg) brightness(0.8)'
-              }}
-            />
+            <svg width="100" height="100" viewBox="0 0 100 100" style={{ marginBottom: '16px' }}>
+              <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill={colors.navy} textAnchor="middle">DD</text>
+            </svg>
             <h1 style={{ 
               fontSize: '36px', 
               fontWeight: 'bold', 
@@ -589,15 +582,9 @@ const AuctionApp = () => {
         <div style={{ maxWidth: '700px', margin: '0 auto' }}>
           {/* Logo */}
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <img 
-              src="https://i.imgur.com/V3Xmu6V.png" 
-              alt="December Debutantes Logo"
-              style={{ 
-                width: '80px',
-                height: '80px',
-                filter: 'brightness(0) saturate(100%) invert(15%) sepia(95%) saturate(2000%) hue-rotate(210deg) brightness(0.8)'
-              }}
-            />
+            <svg width="80" height="80" viewBox="0 0 100 100">
+              <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill={colors.navy} textAnchor="middle">DD</text>
+            </svg>
           </div>
           
           {/* Header */}
@@ -917,15 +904,9 @@ const AuctionApp = () => {
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <img 
-            src="https://i.imgur.com/V3Xmu6V.png" 
-            alt="December Debutantes Logo"
-            style={{ 
-              width: '100px',
-              height: '100px',
-              filter: 'brightness(0) saturate(100%) invert(15%) sepia(95%) saturate(2000%) hue-rotate(210deg) brightness(0.8)'
-            }}
-          />
+          <svg width="100" height="100" viewBox="0 0 100 100">
+            <text x="50" y="70" fontSize="60" fontFamily="Georgia, serif" fontWeight="bold" fill={colors.navy} textAnchor="middle">DD</text>
+          </svg>
         </div>
         
         {/* Header */}
