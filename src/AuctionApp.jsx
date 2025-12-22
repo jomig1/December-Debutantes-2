@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Gavel, Download, Upload, Settings, LogOut, User } from 'lucide-react';
 import { database } from './firebase-config';
-import { ref, set, onValue, update, get } from 'firebase/database';
+import { ref, set, onValue } from 'firebase/database';
 
 // Color palette
 const colors = {
@@ -105,7 +105,6 @@ const AuctionApp = () => {
       await set(ref(database, path), data);
     } catch (error) {
       console.error('Firebase update error:', error);
-      showNotification('Error syncing data');
     }
   };
   
@@ -114,6 +113,7 @@ const AuctionApp = () => {
     if (bidders && bidders.length > 0) {
       updateFirebase('bidders', bidders);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bidders]);
   
   // Sync items to Firebase whenever they change
@@ -121,6 +121,7 @@ const AuctionApp = () => {
     if (items) {
       updateFirebase('items', items);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
   
   // Sync auction state to Firebase
@@ -134,6 +135,7 @@ const AuctionApp = () => {
       isPaused
     };
     updateFirebase('auction', auctionState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentItemIndex, currentBids, timeRemaining, itemActive, lastBidTime, isPaused]);
   
   // UI state
@@ -228,6 +230,7 @@ const AuctionApp = () => {
     if (auctioneerPassword) {
       updateFirebase('passwords/auctioneer', auctioneerPassword);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auctioneerPassword]);
   
   const showNotification = (message) => {
