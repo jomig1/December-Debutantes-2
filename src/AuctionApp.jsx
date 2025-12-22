@@ -108,13 +108,8 @@ const AuctionApp = () => {
     }
   };
   
-  // Sync bidders to Firebase whenever they change
-  useEffect(() => {
-    if (bidders && bidders.length > 0) {
-      updateFirebase('bidders', bidders);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bidders]);
+  // DON'T auto-sync bidders - only sync when explicitly saved
+  // This prevents overwriting during typing
   
   // Sync items to Firebase whenever they change
   useEffect(() => {
@@ -175,15 +170,19 @@ const AuctionApp = () => {
           : item
       ));
       
-      setBidders(bidders.map(b => 
+      const updatedBidders = bidders.map(b => 
         b.name === winner 
           ? { 
               ...b, 
               balance: b.balance - amount,
-              itemsWon: [...b.itemsWon, { ...currentItem, winningBid: amount }]
+              itemsWon: [...(b.itemsWon || []), { ...currentItem, winningBid: amount }]
             }
           : b
-      ));
+      );
+      setBidders(updatedBidders);
+      
+      // Sync to Firebase
+      updateFirebase('bidders', updatedBidders);
       
       showNotification(`${currentItem.title} sold to ${winner} for $${amount}!`);
     } else {
@@ -422,16 +421,20 @@ const AuctionApp = () => {
     : false;
 
   // Reset functions
-  const resetBalances = () => {
+  const resetBalances = async () => {
     if (window.confirm('Reset all balances to $500? (Items won will be kept)')) {
-      setBidders(bidders.map(b => ({ ...b, balance: 500 })));
+      const updatedBidders = bidders.map(b => ({ ...b, balance: 500 }));
+      setBidders(updatedBidders);
+      await updateFirebase('bidders', updatedBidders);
       showNotification('Balances reset to $500');
     }
   };
   
-  const resetItemsWon = () => {
+  const resetItemsWon = async () => {
     if (window.confirm('Clear all items won from bidders? (Balances will remain unchanged)')) {
-      setBidders(bidders.map(b => ({ ...b, itemsWon: [] })));
+      const updatedBidders = bidders.map(b => ({ ...b, itemsWon: [] }));
+      setBidders(updatedBidders);
+      await updateFirebase('bidders', updatedBidders);
       showNotification('Items won cleared');
     }
   };
@@ -1544,7 +1547,7 @@ const AuctionApp = () => {
             </div>
             
             <button
-              onClick={() => {
+              onClick={async () => {
                 if (!auctioneerPassword) {
                   showNotification('Please set an auctioneer password');
                   return;
@@ -1554,7 +1557,9 @@ const AuctionApp = () => {
                   showNotification('Please set passwords for all bidders');
                   return;
                 }
-                showNotification('Passwords saved!');
+                // Save to Firebase
+                await updateFirebase('bidders', bidders);
+                showNotification('Passwords saved to Firebase!');
               }}
               style={{
                 ...buttonStyle,
