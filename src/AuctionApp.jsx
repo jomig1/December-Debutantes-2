@@ -65,6 +65,7 @@ const AuctionApp = () => {
   const [customBidAmount, setCustomBidAmount] = useState('');
   const [showSetupModal, setShowSetupModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showPasswords, setShowPasswords] = useState(false);
   const [notification, setNotification] = useState('');
   const [editingItem, setEditingItem] = useState(null);
   
@@ -1406,10 +1407,30 @@ const AuctionApp = () => {
               </button>
             </div>
             
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: colors.navy, margin: 0 }}>
+                All Passwords
+              </h3>
+              <button
+                onClick={() => setShowPasswords(!showPasswords)}
+                style={{
+                  ...buttonStyle,
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  backgroundColor: colors.white,
+                  color: colors.navy,
+                  border: `2px solid ${colors.navy}`,
+                  boxShadow: 'none'
+                }}
+              >
+                {showPasswords ? '🙈 Hide' : '👁️ Show'} Passwords
+              </button>
+            </div>
+            
             <div style={{ marginBottom: '24px' }}>
               <label style={labelStyle}>Auctioneer Password</label>
               <input
-                type="password"
+                type={showPasswords ? "text" : "password"}
                 value={auctioneerPassword}
                 onChange={(e) => setAuctioneerPassword(e.target.value)}
                 style={inputStyle}
@@ -1417,9 +1438,9 @@ const AuctionApp = () => {
               />
             </div>
             
-            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
+            <h4 style={{ fontSize: '16px', fontWeight: 'bold', color: colors.navy, marginBottom: '16px' }}>
               Bidder Passwords
-            </h3>
+            </h4>
             <div style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
@@ -1430,7 +1451,7 @@ const AuctionApp = () => {
                 <div key={bidder.name}>
                   <label style={labelStyle}>{bidder.name}</label>
                   <input
-                    type="password"
+                    type={showPasswords ? "text" : "password"}
                     value={bidder.password}
                     onChange={(e) => {
                       const newBidders = [...bidders];
