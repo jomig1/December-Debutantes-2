@@ -148,6 +148,7 @@ const AuctionApp = () => {
   // Refs
   const timerRef = useRef(null);
   const lastBidTimeRef = useRef(null);
+  const autoAdvanceRef = useRef(null);
   
   // Get sorted items by number
   const sortedItems = [...items].sort((a, b) => a.number - b.number);
@@ -188,7 +189,41 @@ const AuctionApp = () => {
     } else {
       showNotification(`${currentItem.title} ended with no bids`);
     }
-  }, [currentItem, itemActive, currentBids, items, bidders]);
+    
+    // Auto-advance to next item after 10 seconds
+    autoAdvanceRef.current = setTimeout(() => {
+      // Find next unwon item
+      const nextUnwonIndex = sortedItems.findIndex((item, idx) => !item.winner && idx > currentItemIndex);
+      
+      if (nextUnwonIndex >= 0) {
+        setCurrentItemIndex(nextUnwonIndex);
+        setCurrentBids([]);
+        setTimeRemaining(300);
+        setItemActive(true);
+        const now = Date.now();
+        setLastBidTime(now);
+        lastBidTimeRef.current = now;
+        setIsPaused(false);
+        showNotification(`Auto-starting: ${sortedItems[nextUnwonIndex].title}`);
+      } else {
+        // Check from beginning if we're at the end
+        const firstUnwonIndex = sortedItems.findIndex(item => !item.winner);
+        if (firstUnwonIndex >= 0) {
+          setCurrentItemIndex(firstUnwonIndex);
+          setCurrentBids([]);
+          setTimeRemaining(300);
+          setItemActive(true);
+          const now = Date.now();
+          setLastBidTime(now);
+          lastBidTimeRef.current = now;
+          setIsPaused(false);
+          showNotification(`Auto-starting: ${sortedItems[firstUnwonIndex].title}`);
+        } else {
+          showNotification('🎉 All items have been auctioned!');
+        }
+      }
+    }, 10000); // 10 second delay
+  }, [currentItem, itemActive, currentBids, items, bidders, currentItemIndex, sortedItems]);
   
   // Timer logic
   useEffect(() => {
@@ -238,8 +273,12 @@ const AuctionApp = () => {
   };
   
   const handleLogin = (name, password) => {
-    console.log('Login attempt:', name, password);
-    console.log('Current bidders:', bidders);
+    console.log('=== LOGIN DEBUG ===');
+    console.log('Attempting login for:', name);
+    console.log('With password:', password);
+    console.log('Password type:', typeof password);
+    console.log('Total bidders:', bidders.length);
+    console.log('Bidders array:', JSON.stringify(bidders, null, 2));
     
     // Check if auctioneer trying to login without password set
     if (name === 'auctioneer' && !auctioneerPassword) {
@@ -258,14 +297,20 @@ const AuctionApp = () => {
       return;
     }
     
+    // Try to find matching bidder
+    for (let i = 0; i < bidders.length; i++) {
+      const b = bidders[i];
+      console.log(`Checking bidder ${i}:`, b.name, 'password:', b.password, 'matches name?', b.name === name, 'matches password?', b.password === password);
+    }
+    
     const bidder = bidders.find(b => b.name === name && b.password === password);
     console.log('Found bidder:', bidder);
+    
     if (bidder) {
       setCurrentUser(name);
       setIsAuctioneer(false);
       showNotification(`Welcome, ${name}!`);
     } else {
-      console.log('Login failed - checking all bidders:', bidders.map(b => ({ name: b.name, hasPassword: !!b.password })));
       showNotification('Invalid credentials');
     }
   };
@@ -294,6 +339,12 @@ const AuctionApp = () => {
   };
   
   const startItem = (index) => {
+    // Cancel any pending auto-advance
+    if (autoAdvanceRef.current) {
+      clearTimeout(autoAdvanceRef.current);
+      autoAdvanceRef.current = null;
+    }
+    
     if (itemActive) {
       showNotification('End current item first');
       return;
