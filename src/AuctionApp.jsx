@@ -273,13 +273,6 @@ const AuctionApp = () => {
   };
   
   const handleLogin = (name, password) => {
-    console.log('=== LOGIN DEBUG ===');
-    console.log('Attempting login for:', name);
-    console.log('With password:', password);
-    console.log('Password type:', typeof password);
-    console.log('Total bidders:', bidders.length);
-    console.log('Bidders array:', JSON.stringify(bidders, null, 2));
-    
     // Check if auctioneer trying to login without password set
     if (name === 'auctioneer' && !auctioneerPassword) {
       // Allow auctioneer to login even without setup to do initial setup
@@ -297,14 +290,7 @@ const AuctionApp = () => {
       return;
     }
     
-    // Try to find matching bidder
-    for (let i = 0; i < bidders.length; i++) {
-      const b = bidders[i];
-      console.log(`Checking bidder ${i}:`, b.name, 'password:', b.password, 'matches name?', b.name === name, 'matches password?', b.password === password);
-    }
-    
     const bidder = bidders.find(b => b.name === name && b.password === password);
-    console.log('Found bidder:', bidder);
     
     if (bidder) {
       setCurrentUser(name);
@@ -545,6 +531,28 @@ const AuctionApp = () => {
     }
   };
   
+  const endAuction = async () => {
+    if (window.confirm('🏁 END AUCTION? This will stop any active item and prevent auto-advance.')) {
+      // End current item if active
+      if (itemActive && currentItem) {
+        endCurrentItem();
+      }
+      
+      // Stop auction
+      setItemActive(false);
+      setCurrentItemIndex(-1);
+      setIsPaused(false);
+      
+      // Clear auto-advance
+      if (autoAdvanceRef.current) {
+        clearTimeout(autoAdvanceRef.current);
+        autoAdvanceRef.current = null;
+      }
+      
+      showNotification('🏁 Auction ended');
+    }
+  };
+  
   const pauseAuction = () => {
     setIsPaused(true);
     showNotification('Auction paused');
@@ -712,14 +720,6 @@ const AuctionApp = () => {
   
   // Bidder view
   if (!isAuctioneer && currentBidder) {
-    console.log('=== BIDDER VIEW DEBUG ===');
-    console.log('Current bidder:', currentBidder.name);
-    console.log('Current item index:', currentItemIndex);
-    console.log('Item active:', itemActive);
-    console.log('Total items:', items.length);
-    console.log('Current item object:', currentItem);
-    console.log('Sorted items:', sortedItems.length);
-    
     return (
       <div style={{ 
         minHeight: '100vh', 
@@ -728,25 +728,6 @@ const AuctionApp = () => {
         fontFamily: 'Georgia, serif'
       }}>
         <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-          {/* VERY OBVIOUS DEBUG PANEL AT TOP */}
-          <div style={{
-            backgroundColor: '#ff0000',
-            color: '#ffffff',
-            padding: '20px',
-            marginBottom: '20px',
-            borderRadius: '12px',
-            fontSize: '14px',
-            fontFamily: 'monospace',
-            border: '4px solid #ffff00'
-          }}>
-            <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '10px' }}>🐛 DEBUG MODE ACTIVE</div>
-            <div>Bidder: {currentBidder.name}</div>
-            <div>Items in Database: {items.length}</div>
-            <div>Current Index: {currentItemIndex}</div>
-            <div>Active: {itemActive ? '✅ YES' : '❌ NO'}</div>
-            <div>Current Item: {currentItem ? `#${currentItem.number} ${currentItem.title}` : '❌ NULL'}</div>
-          </div>
-          
           {/* Logo */}
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
             <svg width="80" height="80" viewBox="0 0 100 100">
@@ -1484,6 +1465,22 @@ const AuctionApp = () => {
                   Import Data
                 </div>
               </label>
+              
+              <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: colors.navy, marginBottom: '12px', marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${colors.border}` }}>
+                Auction Controls
+              </h4>
+              <button
+                onClick={endAuction}
+                style={{
+                  ...buttonStyle,
+                  width: '100%',
+                  backgroundColor: '#9333ea',
+                  boxShadow: '0 2px 8px rgba(147, 51, 234, 0.3)',
+                  marginBottom: '20px'
+                }}
+              >
+                🏁 End Auction
+              </button>
               
               <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: colors.navy, marginBottom: '12px', marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${colors.border}` }}>
                 Reset Options
