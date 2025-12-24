@@ -712,6 +712,14 @@ const AuctionApp = () => {
   
   // Bidder view
   if (!isAuctioneer && currentBidder) {
+    console.log('=== BIDDER VIEW DEBUG ===');
+    console.log('Current bidder:', currentBidder.name);
+    console.log('Current item index:', currentItemIndex);
+    console.log('Item active:', itemActive);
+    console.log('Total items:', items.length);
+    console.log('Current item object:', currentItem);
+    console.log('Sorted items:', sortedItems.length);
+    
     return (
       <div style={{ 
         minHeight: '100vh', 
