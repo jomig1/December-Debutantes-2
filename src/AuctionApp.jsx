@@ -111,9 +111,9 @@ const AuctionApp = () => {
   // DON'T auto-sync bidders - only sync when explicitly saved
   // This prevents overwriting during typing
   
-  // Sync items to Firebase whenever they change
+  // Sync items to Firebase whenever they change (but not if empty on initial load)
   useEffect(() => {
-    if (items) {
+    if (items && items.length > 0) {
       updateFirebase('items', items);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
