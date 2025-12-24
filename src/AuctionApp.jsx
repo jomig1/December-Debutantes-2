@@ -1020,6 +1020,34 @@ const AuctionApp = () => {
               </div>
             </div>
           )}
+          
+          {/* DEBUG PANEL */}
+          <div style={{
+            position: 'fixed',
+            bottom: '0',
+            left: '0',
+            right: '0',
+            backgroundColor: '#000',
+            color: '#0f0',
+            padding: '12px',
+            fontFamily: 'monospace',
+            fontSize: '11px',
+            borderTop: '2px solid #0f0',
+            zIndex: 200,
+            maxHeight: '150px',
+            overflowY: 'auto'
+          }}>
+            <div><strong>🐛 DEBUG INFO:</strong></div>
+            <div>Bidder: {currentBidder.name}</div>
+            <div>Total Items Loaded: {items.length}</div>
+            <div>Sorted Items: {sortedItems.length}</div>
+            <div>Current Item Index: {currentItemIndex}</div>
+            <div>Item Active: {itemActive ? 'YES' : 'NO'}</div>
+            <div>Current Item: {currentItem ? `#${currentItem.number} - ${currentItem.title}` : 'NULL'}</div>
+            <div>Time Remaining: {timeRemaining}s</div>
+            <div>Is Paused: {isPaused ? 'YES' : 'NO'}</div>
+            <div>Current Bids: {currentBids.length}</div>
+          </div>
         </div>
         
         {notification && (
