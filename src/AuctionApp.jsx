@@ -728,6 +728,27 @@ const AuctionApp = () => {
         fontFamily: 'Georgia, serif'
       }}>
         <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+          {/* TEMPORARY DEBUG PANEL */}
+          <div style={{
+            backgroundColor: '#ff0000',
+            color: '#ffffff',
+            padding: '20px',
+            marginBottom: '20px',
+            borderRadius: '12px',
+            fontSize: '14px',
+            fontFamily: 'monospace',
+            border: '4px solid #ffff00'
+          }}>
+            <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '10px' }}>🐛 DEBUG (Temporary)</div>
+            <div>Bidder: {currentBidder.name}</div>
+            <div>Items Loaded: {items.length}</div>
+            <div>Current Index: {currentItemIndex}</div>
+            <div>Item Active: {itemActive ? '✅ YES' : '❌ NO'}</div>
+            <div>Current Item: {currentItem ? `#${currentItem.number} ${currentItem.title}` : '❌ NULL'}</div>
+            <div>Paused: {isPaused ? 'YES' : 'NO'}</div>
+            <div>Time: {timeRemaining}s</div>
+          </div>
+          
           {/* Logo */}
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
             <svg width="80" height="80" viewBox="0 0 100 100">
