@@ -320,21 +320,27 @@ const AuctionApp = () => {
     setIsAuctioneer(false);
   };
   
-  const addItem = (item) => {
-    setItems([...items, { ...item, id: generateId(), winner: null, winningBid: null }]);
-    showNotification('Item added');
+  const addItem = async (item) => {
+    const newItems = [...items, { ...item, id: generateId(), winner: null, winningBid: null }];
+    setItems(newItems);
+    await updateFirebase('items', newItems);
+    showNotification('Item added and synced');
   };
   
-  const updateItem = (id, updates) => {
-    setItems(items.map(item => item.id === id ? { ...item, ...updates } : item));
+  const updateItem = async (id, updates) => {
+    const newItems = items.map(item => item.id === id ? { ...item, ...updates } : item);
+    setItems(newItems);
+    await updateFirebase('items', newItems);
     setEditingItem(null);
-    showNotification('Item updated');
+    showNotification('Item updated and synced');
   };
   
-  const deleteItem = (id) => {
+  const deleteItem = async (id) => {
     if (window.confirm('Delete this item?')) {
-      setItems(items.filter(item => item.id !== id));
-      showNotification('Item deleted');
+      const newItems = items.filter(item => item.id !== id);
+      setItems(newItems);
+      await updateFirebase('items', newItems);
+      showNotification('Item deleted and synced');
     }
   };
   
