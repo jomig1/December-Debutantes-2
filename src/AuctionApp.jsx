@@ -728,6 +728,25 @@ const AuctionApp = () => {
         fontFamily: 'Georgia, serif'
       }}>
         <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+          {/* VERY OBVIOUS DEBUG PANEL AT TOP */}
+          <div style={{
+            backgroundColor: '#ff0000',
+            color: '#ffffff',
+            padding: '20px',
+            marginBottom: '20px',
+            borderRadius: '12px',
+            fontSize: '14px',
+            fontFamily: 'monospace',
+            border: '4px solid #ffff00'
+          }}>
+            <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '10px' }}>🐛 DEBUG MODE ACTIVE</div>
+            <div>Bidder: {currentBidder.name}</div>
+            <div>Items in Database: {items.length}</div>
+            <div>Current Index: {currentItemIndex}</div>
+            <div>Active: {itemActive ? '✅ YES' : '❌ NO'}</div>
+            <div>Current Item: {currentItem ? `#${currentItem.number} ${currentItem.title}` : '❌ NULL'}</div>
+          </div>
+          
           {/* Logo */}
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
             <svg width="80" height="80" viewBox="0 0 100 100">
@@ -1020,34 +1039,6 @@ const AuctionApp = () => {
               </div>
             </div>
           )}
-          
-          {/* DEBUG PANEL */}
-          <div style={{
-            position: 'fixed',
-            bottom: '0',
-            left: '0',
-            right: '0',
-            backgroundColor: '#000',
-            color: '#0f0',
-            padding: '12px',
-            fontFamily: 'monospace',
-            fontSize: '11px',
-            borderTop: '2px solid #0f0',
-            zIndex: 200,
-            maxHeight: '150px',
-            overflowY: 'auto'
-          }}>
-            <div><strong>🐛 DEBUG INFO:</strong></div>
-            <div>Bidder: {currentBidder.name}</div>
-            <div>Total Items Loaded: {items.length}</div>
-            <div>Sorted Items: {sortedItems.length}</div>
-            <div>Current Item Index: {currentItemIndex}</div>
-            <div>Item Active: {itemActive ? 'YES' : 'NO'}</div>
-            <div>Current Item: {currentItem ? `#${currentItem.number} - ${currentItem.title}` : 'NULL'}</div>
-            <div>Time Remaining: {timeRemaining}s</div>
-            <div>Is Paused: {isPaused ? 'YES' : 'NO'}</div>
-            <div>Current Bids: {currentBids.length}</div>
-          </div>
         </div>
         
         {notification && (
