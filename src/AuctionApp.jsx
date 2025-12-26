@@ -140,6 +140,18 @@ const AuctionApp = () => {
   const [showPasswords, setShowPasswords] = useState(false);
   const [notification, setNotification] = useState('');
   const [editingItem, setEditingItem] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Rotate images every 5 seconds when waiting
+  useEffect(() => {
+    if (!itemActive) {
+      const images = ["https://i.imgur.com/S9mB99c.jpeg", "https://i.imgur.com/5YY7jj8.jpeg"];
+      const interval = setInterval(() => {
+        setCurrentImageIndex(prev => (prev + 1) % images.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [itemActive]);
   
   // Login state
   const [loginName, setLoginName] = useState('');
@@ -958,7 +970,23 @@ const AuctionApp = () => {
               )}
             </div>
           ) : (
-            <div style={{ ...cardStyle, textAlign: 'center', padding: '60px 32px' }}>
+            <div style={{ ...cardStyle, textAlign: 'center', padding: '40px 32px' }}>
+              {/* Rotating Images */}
+              <div style={{ marginBottom: '24px' }}>
+                <img 
+                  src={["https://i.imgur.com/S9mB99c.jpeg", "https://i.imgur.com/5YY7jj8.jpeg"][currentImageIndex]}
+                  alt="December Debutantes"
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                    marginBottom: '20px',
+                    transition: 'opacity 0.5s ease-in-out'
+                  }}
+                />
+              </div>
+              
               <Gavel size={64} style={{ color: colors.lightText, margin: '0 auto 16px' }} />
               <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: colors.navy, marginBottom: '8px' }}>
                 Waiting for Next Item
